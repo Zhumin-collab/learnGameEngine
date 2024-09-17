@@ -130,7 +130,11 @@ int main()
         glClearColor(49.f/255.f, 77.f/255.f, 121.f/255.f, 1.f);
 
         glm::mat4 trans = glm::translate(glm::vec3(0.f, 0.f, 0.f));
-        glm::mat4 rotation = glm::eulerAngleYXZ(glm::radians(0.f), glm::radians(0.f), glm::radians(0.f)); //使用欧拉角旋转;
+
+        static float rotate_eulerAngle = 0.f;
+        rotate_eulerAngle += 1.f;
+        glm::mat4 rotation = glm::eulerAngleYXZ(glm::radians(rotate_eulerAngle), glm::radians(rotate_eulerAngle), glm::radians(rotate_eulerAngle));       
+        
         glm::mat4 scale = glm::scale(glm::vec3(2.0f, 2.0f, 2.0f));
 
         model = trans * scale* rotation;
@@ -145,7 +149,10 @@ int main()
 
         mvp = projection * view * model;
 
+
         glUseProgram(program);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE); //开启背面剔除
         {
             //启用顶点Shader属性(a_pos)，指定与顶点坐标数据进行关联
             glEnableVertexAttribArray(vpos_location);
@@ -159,7 +166,7 @@ int main()
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
 
             //上传顶点数据并进行绘制
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawArrays(GL_TRIANGLES, 0, 6*6);
 
         }
 

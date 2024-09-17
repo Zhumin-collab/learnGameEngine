@@ -1,43 +1,123 @@
 //
-// Created by yzm on 2024/9/16
+// Created by captain on 2021/3/25.
+// 顶点坐标 顶点颜色
 //
 
-#ifndef VERTEXDATA_H
-#define VERTEXDATA_H
+#ifndef UNTITLED_VERTEXDATA_H
+#define UNTITLED_VERTEXDATA_H
 
 #include <glm/glm.hpp>
 
-// 顶点数据结构
-static const glm::vec3 kPositions[6] = {
-    glm::vec3{ -1.0f, -1.0f, 0.0f},
-    glm::vec3{  1.0f, -1.0f, 0.0f},
-    glm::vec3{  1.0f,  1.0f, 0.0f},
+static const glm::vec3 kPositions[36] = {
+        //Front
+        glm::vec3(-1.0f, -1.0f, 1.0f),
+        glm::vec3(1.0f, -1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
 
-    glm::vec3{1.0f,1.0f,0.0f},
-    glm::vec3{-1.0f,1.0f,0.0f},
-    glm::vec3{-1.0f,-1.0f,0.0f}
+        glm::vec3(-1.0f, -1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(-1.0f, 1.0f, 1.0f),
 
+        //back
+        glm::vec3(1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, 1.0f, -1.0f),
+
+        glm::vec3(1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, 1.0f, -1.0f),
+        glm::vec3(1.0f, 1.0f, -1.0f),
+
+        //left
+        glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, -1.0f, 1.0f),
+        glm::vec3(-1.0f, 1.0f, 1.0f),
+
+        glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::vec3(-1.0f, 1.0f, 1.0f),
+        glm::vec3(-1.0f, 1.0f, -1.0f),
+
+        //right
+        glm::vec3(1.0f, -1.0f, 1.0f),
+        glm::vec3(1.0f, -1.0f, -1.0f),
+        glm::vec3(1.0f, 1.0f, -1.0f),
+
+        glm::vec3(1.0f, -1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, -1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+
+        //up
+        glm::vec3(-1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, -1.0f),
+
+        glm::vec3(-1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, -1.0f),
+        glm::vec3(-1.0f, 1.0f, -1.0f),
+
+        //down
+        glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::vec3(1.0f, -1.0f, -1.0f),
+        glm::vec3(1.0f, -1.0f, 1.0f),
+
+        glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::vec3(1.0f, -1.0f, 1.0f),
+        glm::vec3(-1.0f, -1.0f, 1.0f),
 };
 
+static const glm::vec4 kColors[36] = {
+        //Front
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
 
-static const glm::vec4 kColors[6] = {
-    glm::vec4{ 1.0f, 0.0f, 0.0f, 1.f},
-    glm::vec4{ 0.0f, 1.0f, 0.0f, 1.f},
-    glm::vec4{ 0.0f, 0.0f, 1.0f, 1.f},
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
 
-    glm::vec4{0.0f,0.f,1.f,1.f},
-    glm::vec4{1.f,0.f,0.f,1.f},
-    glm::vec4{1.f,0.f,0.f,1.f}
+        //back
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
 
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
+        glm::vec4(1, 0, 0, 1),
+
+        //left
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+
+        //right
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+        glm::vec4(0, 1, 0, 1),
+
+        //up
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+
+        //down
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
+        glm::vec4(0, 0, 1, 1),
 };
 
-
-
-
-
-
-
-
-
-
-#endif // VERTEXDATA_H
+#endif //UNTITLED_VERTEXDATA_H
