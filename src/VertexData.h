@@ -15,7 +15,7 @@ static const glm::vec3 kPositions[3] = {
 };
 
 
-static const glm::vec3 kColors[3] = {
+static const glm::vec4 kColors[3] = {
     glm::vec4{ 1.0f, 0.0f, 0.0f, 1.f},
     glm::vec4{ 0.0f, 1.0f, 0.0f, 1.f},
     glm::vec4{ 0.0f, 0.0f, 1.0f, 1.f}
