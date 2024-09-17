@@ -159,7 +159,7 @@ int main()
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
 
             //上传顶点数据并进行绘制
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
 
         }
 
