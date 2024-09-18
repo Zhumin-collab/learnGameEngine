@@ -113,12 +113,20 @@ int main()
     init_opengl();
     compile_shader();
 
-    create_texture("E:/learnGameEngine/data/images/urban.jpg");
+    // std::string src_image_file_path = "E:/learnGameEngine/data/images/urban.jpg";
+    // std::string dst_image_file_path = "E:/learnGameEngine/data/images/urban.cpt";
+    
+    // Texture2D::CompressImageFile(src_image_file_path, dst_image_file_path);
+
+    create_texture("E:/learnGameEngine/data/images/urban.cpt");
+
 
     mvp_location = glGetUniformLocation(program, "u_mvp");
     vpos_location = glGetAttribLocation(program, "a_pos");
     vcol_location = glGetAttribLocation(program, "a_color");
     a_uv_location = glGetAttribLocation(program, "a_uv");
+
+
     while(!glfwWindowShouldClose(window))
     {
         float ratio;

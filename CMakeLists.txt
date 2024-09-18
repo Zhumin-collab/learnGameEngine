@@ -9,7 +9,9 @@ set(GLFW_DIR "depends/glfw/include")
 set(GLAD_DIR "depends/glad/include")
 set(GLM_DIR "depends/glm/include")
 set(STB_DIR "depends/stb/include")
-include_directories(${GLFW_DIR} ${GLAD_DIR} ${GLM_DIR} ${STB_DIR})
+set(TIMETOOL_DIR "depends/timetool")
+
+include_directories(${GLFW_DIR} ${GLAD_DIR} ${GLM_DIR} ${STB_DIR} ${TIMETOOL_DIR})
 
 add_library(glad STATIC depends/glad/src/glad_gl.c)
 
