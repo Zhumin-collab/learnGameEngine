@@ -14,7 +14,7 @@
 
 #include "VertexData.h"
 #include "ShaderSource.h"
-
+#include "texture2d.h"
 using namespace std;
 
 static void error_callback(int error, const char* description)
@@ -24,7 +24,8 @@ static void error_callback(int error, const char* description)
 
 GLFWwindow* window;
 GLuint vertex_shader, fragment_shader, program;
-GLint mvp_location, vpos_location, vcol_location;
+GLint mvp_location, vpos_location, vcol_location,a_uv_location,u_diffuse_texture_location;
+Texture2D* texture2d;
 
 void init_opengl()
 {
@@ -103,15 +104,21 @@ void compile_shader()
     }
 }
 
+void create_texture(std::string image_file_path)
+{
+    texture2d = Texture2D::LoadFromFile(image_file_path);
+}
 int main()
 {
     init_opengl();
     compile_shader();
 
+    create_texture("E:/learnGameEngine/data/images/urban.jpg");
+
     mvp_location = glGetUniformLocation(program, "u_mvp");
     vpos_location = glGetAttribLocation(program, "a_pos");
     vcol_location = glGetAttribLocation(program, "a_color");
-
+    a_uv_location = glGetAttribLocation(program, "a_uv");
     while(!glfwWindowShouldClose(window))
     {
         float ratio;
@@ -151,9 +158,9 @@ int main()
 
 
         glUseProgram(program);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE); //开启背面剔除
         {
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE); //开启背面剔除
             //启用顶点Shader属性(a_pos)，指定与顶点坐标数据进行关联
             glEnableVertexAttribArray(vpos_location);
             glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(glm::vec3), kPositions);
@@ -162,8 +169,20 @@ int main()
             glEnableVertexAttribArray(vcol_location);
             glVertexAttribPointer(vcol_location, 3, GL_FLOAT, false, sizeof(glm::vec4), kColors);
 
+            //启用顶点Shader属性(a_uv)，指定与顶点UV数据进行关联
+            glEnableVertexAttribArray(a_uv_location);
+            glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(glm::vec2), kUVs);
+
             //上传mvp矩阵
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
+
+            //贴图设置
+            //激活纹理单元
+            glActiveTexture(GL_TEXTURE0);
+            //绑定纹理
+            glBindTexture(GL_TEXTURE_2D, texture2d->texture_id);
+            //设置纹理单元
+            glUniform1i(u_diffuse_texture_location, 0);
 
             //上传顶点数据并进行绘制
             glDrawArrays(GL_TRIANGLES, 0, 6*6);
