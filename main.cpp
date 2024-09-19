@@ -110,6 +110,7 @@ void create_texture(std::string image_file_path)
 }
 int main()
 {
+    VertexRemoveDumplicate();
     init_opengl();
     compile_shader();
 
@@ -125,7 +126,7 @@ int main()
     vpos_location = glGetAttribLocation(program, "a_pos");
     vcol_location = glGetAttribLocation(program, "a_color");
     a_uv_location = glGetAttribLocation(program, "a_uv");
-
+    u_diffuse_texture_location = glGetUniformLocation(program, "u_diffuse_texture");
 
     while(!glfwWindowShouldClose(window))
     {
@@ -171,15 +172,15 @@ int main()
             glEnable(GL_CULL_FACE); //开启背面剔除
             //启用顶点Shader属性(a_pos)，指定与顶点坐标数据进行关联
             glEnableVertexAttribArray(vpos_location);
-            glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(glm::vec3), kPositions);
+            glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(Vertex), (float*)(&kVertexRemoveDumplicateVector[0]));
 
             //启用顶点Shader属性(a_color)，指定与顶点颜色数据进行关联
             glEnableVertexAttribArray(vcol_location);
-            glVertexAttribPointer(vcol_location, 3, GL_FLOAT, false, sizeof(glm::vec4), kColors);
+            glVertexAttribPointer(vcol_location, 4, GL_FLOAT, false, sizeof(Vertex), ((float*)(&kVertexRemoveDumplicateVector[0]) + 3));
 
             //启用顶点Shader属性(a_uv)，指定与顶点UV数据进行关联
             glEnableVertexAttribArray(a_uv_location);
-            glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(glm::vec2), kUVs);
+            glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(Vertex), ((float*)(&kVertexRemoveDumplicateVector[0]) + 3 + 4));
 
             //上传mvp矩阵
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
@@ -193,7 +194,7 @@ int main()
             glUniform1i(u_diffuse_texture_location, 0);
 
             //上传顶点数据并进行绘制
-            glDrawArrays(GL_TRIANGLES, 0, 6*6);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (float*)(&kVertexIndexVector[0]));
 
         }
 

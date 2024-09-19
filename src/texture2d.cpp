@@ -83,7 +83,7 @@ Texture2D* Texture2D::LoadFromFile(std::string& image_file_path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    delete data;
+    free(data);
 
 
     return texture2d;
