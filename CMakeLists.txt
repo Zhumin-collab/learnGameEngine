@@ -17,7 +17,7 @@ add_library(glad STATIC depends/glad/src/glad_gl.c)
 
 link_directories("depends/glfw/libs")
 
-add_executable(HelloOpenGL main.cpp src/texture2d.cpp)
+add_executable(HelloOpenGL main.cpp src/texture2d.cpp src/renderer/mesh_filter.cpp)
 
 target_include_directories(HelloOpenGL PRIVATE src)
 

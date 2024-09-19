@@ -12,9 +12,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "VertexData.h"
-#include "ShaderSource.h"
 #include "texture2d.h"
+#include "renderer/mesh_filter.h"
+#include "ShaderSource.h"
+
 using namespace std;
 
 static void error_callback(int error, const char* description)
@@ -28,6 +29,8 @@ GLint mvp_location, vpos_location, vcol_location,a_uv_location,u_diffuse_texture
 Texture2D* texture2d;
 GLuint kVBO, kEBO;
 GLuint kVAO;
+MeshFilter* mesh_filter;
+
 void init_opengl()
 {
     cout<<"init_opengl"<<endl;
@@ -121,19 +124,19 @@ void GeneratorBufferObject()
 {
     glGenBuffers(1, &kVBO);
     glBindBuffer(GL_ARRAY_BUFFER, kVBO);
-    glBufferData(GL_ARRAY_BUFFER, kVertexRemoveDumplicateVector.size() * sizeof(Vertex), &kVertexRemoveDumplicateVector[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh_filter->mesh()->vertex_num*sizeof(MeshFilter::Vertex), mesh_filter->mesh()->vertexs_data, GL_STATIC_DRAW);
 
     glGenBuffers(1, &kEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, kEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, kVertexIndexVector.size() * sizeof(unsigned short), &kVertexIndexVector[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_filter->mesh()->vertex_index_num*sizeof(unsigned short), mesh_filter->mesh()->vertex_index_data, GL_STATIC_DRAW);
 
     glBindVertexArray(kVAO);
     {
         glBindBuffer(GL_ARRAY_BUFFER, kVBO);
 
-        glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(Vertex), 0);
-        glVertexAttribPointer(vcol_location, 4, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(float)*3));
-        glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(float)*(3+4)));
+        glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(MeshFilter::Vertex), 0);
+        glVertexAttribPointer(vcol_location, 4, GL_FLOAT, false, sizeof(MeshFilter::Vertex), (void*)(sizeof(float)*3));
+        glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(MeshFilter::Vertex), (void*)(sizeof(float)*(3+4)));
 
         glEnableVertexAttribArray(vpos_location);
         glEnableVertexAttribArray(vcol_location);
@@ -148,15 +151,13 @@ void GeneratorBufferObject()
 
 int main()
 {
-    VertexRemoveDumplicate();
-    init_opengl();
-    compile_shader();
-
-
-    // std::string src_image_file_path = "E:/learnGameEngine/data/images/urban.jpg";
-    // std::string dst_image_file_path = "E:/learnGameEngine/data/images/urban.cpt";
     
-    // Texture2D::CompressImageFile(src_image_file_path, dst_image_file_path);
+    init_opengl();
+
+    mesh_filter = new MeshFilter();
+    mesh_filter->loadMesh("E:/learnGameEngine/data/mesh/cube.mesh");
+
+    compile_shader();
 
     create_texture("E:/learnGameEngine/data/images/urban.cpt");
 
