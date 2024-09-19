@@ -26,7 +26,7 @@ GLFWwindow* window;
 GLuint vertex_shader, fragment_shader, program;
 GLint mvp_location, vpos_location, vcol_location,a_uv_location,u_diffuse_texture_location;
 Texture2D* texture2d;
-
+GLuint kVBO, kEBO;
 void init_opengl()
 {
     cout<<"init_opengl"<<endl;
@@ -108,11 +108,25 @@ void create_texture(std::string image_file_path)
 {
     texture2d = Texture2D::LoadFromFile(image_file_path);
 }
+
+void GeneratorBufferObject()
+{
+    glGenBuffers(1, &kVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, kVBO);
+    glBufferData(GL_ARRAY_BUFFER, kVertexRemoveDumplicateVector.size() * sizeof(Vertex), &kVertexRemoveDumplicateVector[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &kEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, kEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, kVertexIndexVector.size() * sizeof(unsigned short), &kVertexIndexVector[0], GL_STATIC_DRAW);
+}
+
+
 int main()
 {
     VertexRemoveDumplicate();
     init_opengl();
     compile_shader();
+    GeneratorBufferObject();
 
     // std::string src_image_file_path = "E:/learnGameEngine/data/images/urban.jpg";
     // std::string dst_image_file_path = "E:/learnGameEngine/data/images/urban.cpt";
@@ -170,17 +184,19 @@ int main()
         {
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE); //开启背面剔除
+
+            glBindBuffer(GL_ARRAY_BUFFER, kVBO);
             //启用顶点Shader属性(a_pos)，指定与顶点坐标数据进行关联
             glEnableVertexAttribArray(vpos_location);
-            glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(Vertex), (float*)(&kVertexRemoveDumplicateVector[0]));
+            glVertexAttribPointer(vpos_location, 3, GL_FLOAT, false, sizeof(Vertex), 0);
 
             //启用顶点Shader属性(a_color)，指定与顶点颜色数据进行关联
             glEnableVertexAttribArray(vcol_location);
-            glVertexAttribPointer(vcol_location, 4, GL_FLOAT, false, sizeof(Vertex), ((float*)(&kVertexRemoveDumplicateVector[0]) + 3));
+            glVertexAttribPointer(vcol_location, 4, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(float)*3));
 
             //启用顶点Shader属性(a_uv)，指定与顶点UV数据进行关联
             glEnableVertexAttribArray(a_uv_location);
-            glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(Vertex), ((float*)(&kVertexRemoveDumplicateVector[0]) + 3 + 4));
+            glVertexAttribPointer(a_uv_location, 2, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(float)*(3+4)));
 
             //上传mvp矩阵
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
@@ -193,8 +209,9 @@ int main()
             //设置纹理单元
             glUniform1i(u_diffuse_texture_location, 0);
 
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, kEBO);
             //上传顶点数据并进行绘制
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (float*)(&kVertexIndexVector[0]));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
 
         }
 
