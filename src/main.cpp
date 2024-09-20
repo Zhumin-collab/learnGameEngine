@@ -1,4 +1,10 @@
 // Created by yzm on 2024/9/16
+
+#define GLFW_INCLUDE_NONE
+
+#include <stdlib.h>
+#include <stdio.h>
+
 #include <iostream>
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -9,14 +15,14 @@
 #include <glm/gtx/transform2.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-#include <stdlib.h>
-#include <stdio.h>
 
-#include "texture2d.h"
+
+#include "utils/application.h"
 #include "renderer/mesh_filter.h"
-#include "ShaderSource.h"
+#include "renderer/texture2d.h"
+#include "renderer/shader.h"
+#include "renderer/material.h"
 
-using namespace std;
 
 static void error_callback(int error, const char* description)
 {
@@ -24,16 +30,14 @@ static void error_callback(int error, const char* description)
 }
 
 GLFWwindow* window;
-GLuint vertex_shader, fragment_shader, program;
-GLint mvp_location, vpos_location, vcol_location,a_uv_location,u_diffuse_texture_location;
-Texture2D* texture2d;
+GLint mvp_location, vpos_location, vcol_location,a_uv_location;
 GLuint kVBO, kEBO;
 GLuint kVAO;
-MeshFilter* mesh_filter;
+MeshFilter* mesh_filter = nullptr;
 
 void init_opengl()
 {
-    cout<<"init_opengl"<<endl;
+    std::cout<<"init_opengl"<<std::endl;
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -54,65 +58,6 @@ void init_opengl()
     gladLoadGL(glfwGetProcAddress);
 
     glfwSwapInterval(1);
-}
-
-/// 编译、链接Shader
-void compile_shader()
-{
-    //创建顶点Shader
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    //指定Shader源码
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    //编译Shader
-    glCompileShader(vertex_shader);
-    //获取编译结果
-    GLint compile_status = GL_FALSE;
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_status);
-    if (compile_status == GL_FALSE)
-    {
-        GLchar message[256];
-        glGetShaderInfoLog(vertex_shader, sizeof(message), 0, message);
-        cout << "compile vs error:" << message << endl;
-    }
-
-    //创建片段Shader
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    //指定Shader源码
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    //编译Shader
-    glCompileShader(fragment_shader);
-    //获取编译结果
-    compile_status = GL_FALSE;
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_status);
-    if (compile_status == GL_FALSE)
-    {
-        GLchar message[256];
-        glGetShaderInfoLog(fragment_shader, sizeof(message), 0, message);
-        cout << "compile fs error:" << message << endl;
-    }
-
-
-    //创建GPU程序
-    program = glCreateProgram();
-    //附加Shader
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    //Link
-    glLinkProgram(program);
-    //获取编译结果
-    GLint link_status = GL_FALSE;
-    glGetProgramiv(program, GL_LINK_STATUS, &link_status);
-    if (link_status == GL_FALSE)
-    {
-        GLchar message[256];
-        glGetProgramInfoLog(program, sizeof(message), 0, message);
-        cout << "link error:" << message << endl;
-    }
-}
-
-void create_texture(std::string image_file_path)
-{
-    texture2d = Texture2D::LoadFromFile(image_file_path);
 }
 
 void GeneratorVertexArrayObject()
@@ -151,22 +96,22 @@ void GeneratorBufferObject()
 
 int main()
 {
+    Application::set_data_path("E:/learnGameEngine/data/");
     
     init_opengl();
 
     mesh_filter = new MeshFilter();
-    mesh_filter->loadMesh("E:/learnGameEngine/data/mesh/cube.mesh");
+    mesh_filter->loadMesh("E:/learnGameEngine/data/model/cube.mesh");
 
-    compile_shader();
+    Material* material = new Material();
 
-    create_texture("E:/learnGameEngine/data/images/urban.cpt");
+    material->Parse("material/cube.mat");
 
-
-    mvp_location = glGetUniformLocation(program, "u_mvp");
-    vpos_location = glGetAttribLocation(program, "a_pos");
-    vcol_location = glGetAttribLocation(program, "a_color");
-    a_uv_location = glGetAttribLocation(program, "a_uv");
-    u_diffuse_texture_location = glGetUniformLocation(program, "u_diffuse_texture");
+    GLuint gl_program_id = material->shader()->gl_program_id();
+    mvp_location = glGetUniformLocation(gl_program_id, "u_mvp");
+    vpos_location = glGetAttribLocation(gl_program_id, "a_pos");
+    vcol_location = glGetAttribLocation(gl_program_id, "a_color");
+    a_uv_location = glGetAttribLocation(gl_program_id, "a_uv");
 
     GeneratorVertexArrayObject();
     GeneratorBufferObject();
@@ -209,7 +154,7 @@ int main()
         mvp = projection * view * model;
 
 
-        glUseProgram(program);
+        glUseProgram(gl_program_id);
         {
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE); //开启背面剔除
@@ -217,17 +162,18 @@ int main()
             //上传mvp矩阵
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, &mvp[0][0]);
 
-            //贴图设置
-            //激活纹理单元
-            glActiveTexture(GL_TEXTURE0);
-            //绑定纹理
-            glBindTexture(GL_TEXTURE_2D, texture2d->texture_id);
-            //设置纹理单元
-            glUniform1i(u_diffuse_texture_location, 0);
+            auto textures = material->textures();
+            for(int texture_index = 0; texture_index < textures.size(); texture_index++)
+            {
+
+                glActiveTexture(GL_TEXTURE0 + texture_index);
+                glBindTexture(GL_TEXTURE_2D, textures[texture_index].second->texture_id());
+                glUniform1i(glGetUniformLocation(gl_program_id, textures[texture_index].first.c_str()), texture_index);
+            }
 
             glBindVertexArray(kVAO);
             {
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+                glDrawElements(GL_TRIANGLES, mesh_filter->mesh()->vertex_index_num, GL_UNSIGNED_SHORT, 0);
             }
             glBindVertexArray(0);
 

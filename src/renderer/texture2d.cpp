@@ -66,14 +66,14 @@ Texture2D* Texture2D::LoadFromFile(std::string& image_file_path)
     stopwatch.stop();
     std::cout << "load image cost:" << stopwatch.milliseconds() << "ms" << std::endl;
 
-    texture2d->gl_texture_format = tcp.gl_texture_format;
-    texture2d->width = tcp.width;
-    texture2d->height = tcp.height;
-    texture2d->mipmap_level = tcp.mipmap_level;
+    texture2d->m_gl_texture_format = tcp.gl_texture_format;
+    texture2d->m_width = tcp.width;
+    texture2d->m_height = tcp.height;
+    texture2d->m_mipmap_level = tcp.mipmap_level;
 
 
-    glGenTextures(1, &texture2d->texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture2d->texture_id);
+    glGenTextures(1, &texture2d->m_texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture2d->m_texture_id);
 
     stopwatch.restart();
     glCompressedTexImage2D(GL_TEXTURE_2D, 0, tcp.gl_texture_format, tcp.width, tcp.height, 0, tcp.compress_size, data);
@@ -117,8 +117,8 @@ void Texture2D::CompressImageFile(std::string& image_file_path, std::string& out
     head.type[1] = 'p';
     head.type[2] = 't';
     head.mipmap_level = 0;
-    head.width = texture2d->width;
-    head.height = texture2d->height;
+    head.width = texture2d->m_width;
+    head.height = texture2d->m_height;
     head.gl_texture_format = compress_format;
     head.compress_size = compress_size;
 
