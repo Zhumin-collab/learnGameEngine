@@ -17,8 +17,15 @@ add_library(glad STATIC depends/glad/src/glad_gl.c)
 
 link_directories("depends/glfw/libs")
 
-add_executable(LearnGameEngine src/main.cpp src/renderer/texture2d.cpp src/renderer/mesh_filter.cpp
-                src/renderer/material.cpp src/renderer/shader.cpp src/utils/application.cpp)
+add_executable(LearnGameEngine 
+                src/main.cpp 
+                src/renderer/texture2d.cpp 
+                src/renderer/mesh_filter.cpp
+                src/renderer/material.cpp 
+                src/renderer/shader.cpp 
+                src/utils/application.cpp
+                src/renderer/mesh_render.cpp
+                )
 
 target_include_directories(LearnGameEngine PRIVATE src)
 

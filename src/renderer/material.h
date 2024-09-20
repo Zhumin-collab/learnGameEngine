@@ -7,6 +7,7 @@
 
 class Shader;
 class Texture2D;
+
 class Material
 {
 public:
