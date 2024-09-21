@@ -1,9 +1,20 @@
 //
 // created by yzm on 2024/9/19
 //
+#define RTTR_DLL
+
+#include "mesh_filter.h"
 
 #include <fstream>
-#include "mesh_filter.h"
+#include <rttr/registration>
+
+#include "../utils/application.h"
+
+RTTR_REGISTRATION
+{
+    rttr::registration::class_<MeshFilter>("MeshFilter")
+        .constructor<>()(rttr::policy::ctor::as_raw_ptr);
+}
 
 MeshFilter::MeshFilter()
     : m_mesh(nullptr)
@@ -13,7 +24,7 @@ MeshFilter::MeshFilter()
 
 void MeshFilter::loadMesh(std::string mesh_file_path)
 {
-    std::ifstream in_file(mesh_file_path, std::ios::binary);
+    std::ifstream in_file(Application::data_path()+mesh_file_path, std::ios::binary);
     MeshFileHead head;
     in_file.read((char*)&head, sizeof(MeshFileHead));
 
@@ -29,4 +40,10 @@ void MeshFilter::loadMesh(std::string mesh_file_path)
     m_mesh->vertex_index_num = head.vertex_index_num;
     m_mesh->vertexs_data = (Vertex*)vertex_data;
     m_mesh->vertex_index_data = vertex_index_data;
+}
+
+MeshFilter::~MeshFilter()
+{
+    delete m_mesh;
+    m_mesh = nullptr;
 }

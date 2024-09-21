@@ -2,14 +2,27 @@
 // create by yzm on 2024/9/20
 //
 
-#include <glad//gl.h>
+#define RTTR_DLL
+#include <glad/gl.h>
+#include <rttr/registration>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform2.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include "mesh_render.h"
-#include "mesh_filter.h"
 #include "texture2d.h"
 #include "shader.h"
 #include "material.h"
+#include "mesh_filter.h"
+#include "component/game_object.h"
+#include "component/transform.h"
 
+
+RTTR_REGISTRATION
+{
+    rttr::registration::class_<MeshRender>("MeshRender")
+        .constructor<>()(rttr::policy::ctor::as_raw_ptr);
+}
 MeshRender::MeshRender()
 {
 
@@ -25,18 +38,30 @@ void MeshRender::SetMaterial(Material* material)
     m_material = material;
 }
 
-void MeshRender::SetMeshFilter(MeshFilter* mesh_filter)
-{
-    m_mesh_filter = mesh_filter;
-}
-
-void MeshRender::SetMVP(glm::mat4 mvp)
-{
-    m_mvp = mvp;
-}
 
 void MeshRender::Render()
 {
+    auto component_transform = game_object()->get_component("Transform");
+    auto transform = dynamic_cast<Transform*>(component_transform);
+    if(transform == nullptr)
+    {
+        return;
+    }
+    glm::mat4 trans = glm::translate(transform->position());
+    auto rotation = transform->rotation();
+    glm::mat4 rotate = glm::eulerAngleYXZ(transform->rotation().y, transform->rotation().x, transform->rotation().z);
+    glm::mat4 scale = glm::scale(transform->scale());
+    glm::mat4 model = trans*rotate*scale;
+    glm::mat4 mvp = m_projection * m_view * model;
+
+
+    auto component_mesh_filter = game_object()->get_component("MeshFilter");
+    auto mesh_filter = dynamic_cast<MeshFilter*>(component_mesh_filter);
+    if(mesh_filter == nullptr)
+    {
+        return;
+    }
+
     GLuint gl_program_id = m_material->shader()->gl_program_id();
     if(m_vertex_array_object == 0)
     {
@@ -46,11 +71,11 @@ void MeshRender::Render()
 
         glGenBuffers(1, &m_vertex_buffer_object);
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_object);
-        glBufferData(GL_ARRAY_BUFFER, m_mesh_filter->mesh()->vertex_num * sizeof(MeshFilter::Vertex), m_mesh_filter->mesh()->vertexs_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh_filter->mesh()->vertex_num * sizeof(MeshFilter::Vertex), mesh_filter->mesh()->vertexs_data, GL_STATIC_DRAW);
 
         glGenBuffers(1, &m_element_buffer_object);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer_object);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_mesh_filter->mesh()->vertex_index_num * sizeof(unsigned short), m_mesh_filter->mesh()->vertex_index_data, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_filter->mesh()->vertex_index_num * sizeof(unsigned short), mesh_filter->mesh()->vertex_index_data, GL_STATIC_DRAW);
 
         glGenVertexArrays(1, &m_vertex_array_object);
         glBindVertexArray(m_vertex_array_object);
@@ -74,7 +99,7 @@ void MeshRender::Render()
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
 
-        glUniformMatrix4fv(glGetUniformLocation(gl_program_id,"u_mvp"), 1, GL_FALSE, &m_mvp[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(gl_program_id,"u_mvp"), 1, GL_FALSE, &mvp[0][0]);
         
         auto textures = m_material->textures();
 
@@ -87,7 +112,7 @@ void MeshRender::Render()
 
         glBindVertexArray(m_vertex_array_object);
         {
-            glDrawElements(GL_TRIANGLES, m_mesh_filter->mesh()->vertex_index_num, GL_UNSIGNED_SHORT, 0);
+            glDrawElements(GL_TRIANGLES, mesh_filter->mesh()->vertex_index_num, GL_UNSIGNED_SHORT, 0);
         }
         glBindVertexArray(0);
 

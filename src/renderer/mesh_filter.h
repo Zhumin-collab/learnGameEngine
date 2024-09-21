@@ -4,11 +4,13 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include "component/component.h"
 
-class MeshFilter {
+class MeshFilter: public Component
+{
 public:
     MeshFilter();
-    ~MeshFilter() {};
+    ~MeshFilter();
 
 public:
     struct Vertex {
@@ -19,8 +21,8 @@ public:
 
     struct MeshFileHead {
         char type[4]; //文件类型
-        int vertex_num; //顶点数量
-        int vertex_index_num; //顶点索引数量
+        unsigned short vertex_num; //顶点数量
+        unsigned short vertex_index_num; //顶点索引数量
     };
 
     struct Mesh {
@@ -37,10 +39,6 @@ private:
     Mesh* m_mesh;
     
 };
-
-
-
-
 
 
 #endif //MESHLIB_MESH_FILTER_H

@@ -3,10 +3,12 @@
 
 #include <glm/glm.hpp>
 
+#include "component/component.h"
+
 class MeshFilter;
 class Material;
 class Texture2D;
-class MeshRender
+class MeshRender: public Component
 {
 public:
     MeshRender();
@@ -15,18 +17,16 @@ public:
     void SetMaterial(Material* material);
     Material* material() { return m_material; }
 
-    void SetMeshFilter(MeshFilter* mesh_filter);
-    MeshFilter* mesh_filter() { return m_mesh_filter; }
-
-    void SetMVP(glm::mat4 mvp);
+    void SetView(glm::mat4 view) { m_view = view; }
+    void SetProjection(glm::mat4 projection) { m_projection = projection; }
 
     void Render();
 
 private:
-    MeshFilter* m_mesh_filter;
     Material* m_material;
 
-    glm::mat4 m_mvp;
+    glm::mat4 m_view;
+    glm::mat4 m_projection;
 
     unsigned int m_vertex_buffer_object = 0;
     unsigned int m_element_buffer_object = 0;

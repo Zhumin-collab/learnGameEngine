@@ -1,26 +1,28 @@
 // Created by yzm on 2024/9/16
 
 #define GLFW_INCLUDE_NONE
-
+#define RTTR_DLL
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <iostream>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform2.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
 
 #include "utils/application.h"
 #include "renderer/mesh_filter.h"
 #include "renderer/texture2d.h"
 #include "renderer/shader.h"
 #include "renderer/material.h"
-
 #include "renderer/mesh_render.h"
+#include "component/transform.h"
+#include "component/game_object.h"
+#include "component/component.h"
+
 
 
 static void error_callback(int error, const char* description)
@@ -63,16 +65,19 @@ int main()
     
     init_opengl();
 
-    MeshFilter* mesh_filter = new MeshFilter();
-    mesh_filter->loadMesh("E:/learnGameEngine/data/model/cube.mesh");
+    GameObject* game_object = new GameObject("game_object");
+    
+    auto transform=dynamic_cast<Transform*>(game_object->add_component("Transform"));
+
+    auto mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component<MeshFilter>());
+    mesh_filter->loadMesh("model/fishsoup_pot.mesh");
+
+    auto mesh_render = dynamic_cast<MeshRender*>(game_object->add_component<MeshRender>());
 
     Material* material = new Material();
-    material->Parse("material/cube.mat");
-
-    MeshRender* mesh_render = new MeshRender();
-
+    material->Parse("material/fishsoup_pot.mat");
     mesh_render->SetMaterial(material);
-    mesh_render->SetMeshFilter(mesh_filter);
+
 
 
     while(!glfwWindowShouldClose(window))
@@ -93,12 +98,10 @@ int main()
         glm::mat4 trans = glm::translate(glm::vec3(0.f, 0.f, 0.f));
 
         static float rotate_eulerAngle = 0.f;
-        rotate_eulerAngle += 1.f;
-        glm::mat4 rotation = glm::eulerAngleYXZ(glm::radians(rotate_eulerAngle), glm::radians(rotate_eulerAngle), glm::radians(rotate_eulerAngle));       
-        
-        glm::mat4 scale = glm::scale(glm::vec3(2.0f, 2.0f, 2.0f));
-
-        glm::mat4 model = trans * scale* rotation;
+        rotate_eulerAngle += 0.01f;
+        glm::vec3 rotation = transform->rotation();
+        rotation.y = rotate_eulerAngle;
+        transform->set_rotation(rotation);
 
         glm::mat4 view = glm::lookAt(
             glm::vec3(0.f, 0.f, 10.f),
@@ -108,9 +111,8 @@ int main()
 
         glm::mat4 projection = glm::perspective(glm::radians(60.f), ratio, 1.f, 1000.f);
 
-        glm::mat4 mvp = projection * view * model;
-
-        mesh_render->SetMVP(mvp);
+        mesh_render->SetView(view);
+        mesh_render->SetProjection(projection);
         mesh_render->Render();
 
         glfwSwapBuffers(window);
