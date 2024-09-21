@@ -2,7 +2,9 @@
 #define CAMERA_H
 
 #include <iostream>
+#include <vector>
 #include <glm/glm.hpp>
+#include <functional>
 #include "component/component.h"
 
 class Camera: public Component
@@ -28,11 +30,18 @@ public:
     void set_clear_flag(unsigned int clear_flag) { m_clear_flag = clear_flag; }
 
     void clear();
+
+    static void Foreach(std::function<void()> func);
+
+    static Camera* current_camera() { return m_current_camera; }
 private:
     glm::mat4 m_view_mat4;
     glm::mat4 m_projection_mat4;
     glm::vec4 m_clear_color;
     unsigned int m_clear_flag;
+
+    static std::vector<Camera*> m_cameras;
+    static Camera* m_current_camera;
 
 };
 

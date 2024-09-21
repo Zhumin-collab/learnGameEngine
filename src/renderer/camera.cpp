@@ -17,14 +17,20 @@ RTTR_REGISTRATION
         .constructor<>()(rttr::policy::ctor::as_raw_ptr);
 }
 
+std::vector<Camera*> Camera::m_cameras;
+Camera* Camera::m_current_camera;
+
 Camera::Camera():m_clear_color(49.f/255,77.f/255,121.f/255,1.f),m_clear_flag(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 {
-
+    m_cameras.push_back(this);
 }
 
 Camera::~Camera()
 {
-
+    auto iter=std::find(m_cameras.begin(),m_cameras.end(),this);
+    if(iter!=m_cameras.end()){
+        m_cameras.erase(iter);
+    }
 }
 
 void Camera::SetView(const glm::vec3& cameraForward, const glm::vec3& cameraUp)
@@ -44,3 +50,12 @@ void Camera::clear()
     glClearColor(m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
 }
 
+void Camera::Foreach(std::function<void()> func)
+{
+    for(auto camera:m_cameras)
+    {
+        m_current_camera = camera;
+        m_current_camera->clear();
+        func();
+    }
+}

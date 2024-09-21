@@ -16,7 +16,7 @@
 #include "mesh_filter.h"
 #include "component/game_object.h"
 #include "component/transform.h"
-
+#include "renderer/camera.h"
 
 RTTR_REGISTRATION
 {
@@ -41,6 +41,15 @@ void MeshRender::SetMaterial(Material* material)
 
 void MeshRender::Render()
 {
+    auto current_camera = Camera::current_camera();
+    if(current_camera == nullptr)
+    {
+        return;
+    }
+    auto view = current_camera->view_mat4();
+    auto projection = current_camera->projection_mat4();
+
+
     auto component_transform = game_object()->get_component("Transform");
     auto transform = dynamic_cast<Transform*>(component_transform);
     if(transform == nullptr)
@@ -52,7 +61,7 @@ void MeshRender::Render()
     glm::mat4 rotate = glm::eulerAngleYXZ(transform->rotation().y, transform->rotation().x, transform->rotation().z);
     glm::mat4 scale = glm::scale(transform->scale());
     glm::mat4 model = trans*rotate*scale;
-    glm::mat4 mvp = m_projection * m_view * model;
+    glm::mat4 mvp = projection * view * model;
 
 
     auto component_mesh_filter = game_object()->get_component("MeshFilter");

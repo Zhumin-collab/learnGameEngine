@@ -79,10 +79,16 @@ int main()
     material->Parse("material/fishsoup_pot.mat");
     mesh_render->SetMaterial(material);
 
-    auto go_camera = new GameObject("main_camera");
-    auto transform_camera = dynamic_cast<Transform*>(go_camera->add_component("Transform"));
+    auto go_camera_1 = new GameObject("main_camera");
+    auto transform_camera = dynamic_cast<Transform*>(go_camera_1->add_component("Transform"));
     transform_camera->set_position(glm::vec3(0.f, 0.f, 10.f));
-    auto camera = dynamic_cast<Camera*>(go_camera->add_component("Camera"));
+    auto camera = dynamic_cast<Camera*>(go_camera_1->add_component("Camera"));
+
+    auto go_camera_2 = new GameObject("second_camera");
+    auto transform_camera_2 = dynamic_cast<Transform*>(go_camera_2->add_component("Transform"));
+    transform_camera_2->set_position(glm::vec3(5.f, 0.f, 10.f));
+    auto camera_2 = dynamic_cast<Camera*>(go_camera_2->add_component("Camera"));
+    camera_2->set_clear_flag(GL_DEPTH_BUFFER_BIT);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -99,15 +105,18 @@ int main()
         camera->SetProjection(60.f, ratio, 1.f, 1000.f);
         camera->clear();
         
+        camera_2->SetView(glm::vec3(transform_camera_2->position().x,0,0), glm::vec3(0.f, 1.f, 0.f));
+        camera_2->SetProjection(60.f, ratio, 1.f, 1000.f);
+
         static float rotate_eulerAngle = 0.f;
         rotate_eulerAngle += 0.1f;
         glm::vec3 rotation = transform->rotation();
         rotation.y = rotate_eulerAngle;
         transform->set_rotation(rotation);
 
-        mesh_render->SetView(camera->view_mat4());
-        mesh_render->SetProjection(camera->projection_mat4());
-        mesh_render->Render();
+        Camera::Foreach([&](){
+            mesh_render->Render();
+        });
 
         glfwSwapBuffers(window);
         glfwPollEvents();
