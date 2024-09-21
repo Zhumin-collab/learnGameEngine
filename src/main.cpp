@@ -19,6 +19,7 @@
 #include "renderer/shader.h"
 #include "renderer/material.h"
 #include "renderer/mesh_render.h"
+#include "renderer/camera.h"
 #include "component/transform.h"
 #include "component/game_object.h"
 #include "component/component.h"
@@ -78,7 +79,10 @@ int main()
     material->Parse("material/fishsoup_pot.mat");
     mesh_render->SetMaterial(material);
 
-
+    auto go_camera = new GameObject("main_camera");
+    auto transform_camera = dynamic_cast<Transform*>(go_camera->add_component("Transform"));
+    transform_camera->set_position(glm::vec3(0.f, 0.f, 10.f));
+    auto camera = dynamic_cast<Camera*>(go_camera->add_component("Camera"));
 
     while(!glfwWindowShouldClose(window))
     {
@@ -91,28 +95,18 @@ int main()
 
         glViewport(0, 0, width, height);
 
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-        glClearColor(49.f/255.f, 77.f/255.f, 121.f/255.f, 1.f);
-
-        glm::mat4 trans = glm::translate(glm::vec3(0.f, 0.f, 0.f));
-
+        camera->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+        camera->SetProjection(60.f, ratio, 1.f, 1000.f);
+        camera->clear();
+        
         static float rotate_eulerAngle = 0.f;
-        rotate_eulerAngle += 0.01f;
+        rotate_eulerAngle += 0.1f;
         glm::vec3 rotation = transform->rotation();
         rotation.y = rotate_eulerAngle;
         transform->set_rotation(rotation);
 
-        glm::mat4 view = glm::lookAt(
-            glm::vec3(0.f, 0.f, 10.f),
-            glm::vec3(0.f, 0.f, 0.f),
-            glm::vec3(0.f, 1.f, 0.f)
-        );
-
-        glm::mat4 projection = glm::perspective(glm::radians(60.f), ratio, 1.f, 1000.f);
-
-        mesh_render->SetView(view);
-        mesh_render->SetProjection(projection);
+        mesh_render->SetView(camera->view_mat4());
+        mesh_render->SetProjection(camera->projection_mat4());
         mesh_render->Render();
 
         glfwSwapBuffers(window);
