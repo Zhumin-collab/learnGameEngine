@@ -67,6 +67,7 @@ int main()
     init_opengl();
 
     GameObject* game_object = new GameObject("game_object");
+    game_object->set_layer(0x01);
     
     auto transform=dynamic_cast<Transform*>(game_object->add_component("Transform"));
 
@@ -82,13 +83,19 @@ int main()
     auto go_camera_1 = new GameObject("main_camera");
     auto transform_camera = dynamic_cast<Transform*>(go_camera_1->add_component("Transform"));
     transform_camera->set_position(glm::vec3(0.f, 0.f, 10.f));
-    auto camera = dynamic_cast<Camera*>(go_camera_1->add_component("Camera"));
+    auto camera_1 = dynamic_cast<Camera*>(go_camera_1->add_component("Camera"));
 
     auto go_camera_2 = new GameObject("second_camera");
     auto transform_camera_2 = dynamic_cast<Transform*>(go_camera_2->add_component("Transform"));
-    transform_camera_2->set_position(glm::vec3(5.f, 0.f, 10.f));
+    transform_camera_2->set_position(glm::vec3(1.f, 0.f, 10.f));
     auto camera_2 = dynamic_cast<Camera*>(go_camera_2->add_component("Camera"));
     camera_2->set_clear_flag(GL_DEPTH_BUFFER_BIT);
+
+    camera_1->set_depth(1);
+    camera_2->set_depth(2);
+
+    camera_1->set_chulling_mask(0x01);
+    camera_2->set_chulling_mask(0x01);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -101,9 +108,9 @@ int main()
 
         glViewport(0, 0, width, height);
 
-        camera->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-        camera->SetProjection(60.f, ratio, 1.f, 1000.f);
-        camera->clear();
+        camera_1->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+        camera_1->SetProjection(60.f, ratio, 1.f, 1000.f);
+        camera_1->clear();
         
         camera_2->SetView(glm::vec3(transform_camera_2->position().x,0,0), glm::vec3(0.f, 1.f, 0.f));
         camera_2->SetProjection(60.f, ratio, 1.f, 1000.f);
@@ -113,7 +120,7 @@ int main()
         glm::vec3 rotation = transform->rotation();
         rotation.y = rotate_eulerAngle;
         transform->set_rotation(rotation);
-
+        
         Camera::Foreach([&](){
             mesh_render->Render();
         });

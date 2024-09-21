@@ -46,6 +46,12 @@ void MeshRender::Render()
     {
         return;
     }
+
+    if((current_camera->chulling_mask() & game_object()->layer()) == 0)
+    {
+        return;
+    }
+
     auto view = current_camera->view_mat4();
     auto projection = current_camera->projection_mat4();
 

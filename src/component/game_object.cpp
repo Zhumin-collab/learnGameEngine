@@ -12,7 +12,7 @@ GameObject::GameObject() {
 
 }
 
-GameObject::GameObject(const std::string& name){
+GameObject::GameObject(const std::string& name):m_layer(0x01){
     set_name(name);
 }   
 

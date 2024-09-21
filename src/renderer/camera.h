@@ -29,19 +29,33 @@ public:
 
     void set_clear_flag(unsigned int clear_flag) { m_clear_flag = clear_flag; }
 
+    unsigned char depth() { return m_depth; }
+
+    void set_depth(unsigned char depth);
+    
+    unsigned char chulling_mask() { return m_chulling_mask; }
+    
+    void set_chulling_mask(unsigned char chulling_mask);
+
     void clear();
 
     static void Foreach(std::function<void()> func);
 
     static Camera* current_camera() { return m_current_camera; }
+
+    static void Sort();
 private:
     glm::mat4 m_view_mat4;
     glm::mat4 m_projection_mat4;
     glm::vec4 m_clear_color;
     unsigned int m_clear_flag;
 
+    unsigned char m_depth;
+
     static std::vector<Camera*> m_cameras;
     static Camera* m_current_camera;
+
+    unsigned char m_chulling_mask;
 
 };
 

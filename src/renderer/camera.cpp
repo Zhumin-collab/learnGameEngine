@@ -20,8 +20,13 @@ RTTR_REGISTRATION
 std::vector<Camera*> Camera::m_cameras;
 Camera* Camera::m_current_camera;
 
-Camera::Camera():m_clear_color(49.f/255,77.f/255,121.f/255,1.f),m_clear_flag(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+Camera::Camera():
+    m_clear_color(49.f/255,77.f/255,121.f/255,1.f),
+    m_clear_flag(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT),
+    m_chulling_mask(0x01)
 {
+    if(!m_cameras.empty())
+        m_depth = m_cameras.back()->depth() + 1;
     m_cameras.push_back(this);
 }
 
@@ -58,4 +63,22 @@ void Camera::Foreach(std::function<void()> func)
         m_current_camera->clear();
         func();
     }
+}
+
+void Camera::set_depth(unsigned char depth)
+{
+    m_depth = depth;
+    Sort();
+}
+
+void Camera::set_chulling_mask(unsigned char chulling_mask)
+{
+    m_chulling_mask = chulling_mask;
+}
+
+void Camera::Sort()
+{
+    std::sort(m_cameras.begin(),m_cameras.end(),[](Camera* a,Camera* b){
+        return a->depth() < b->depth();
+    });
 }

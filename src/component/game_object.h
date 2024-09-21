@@ -39,9 +39,13 @@ public:
     Component* get_component(std::string component_type_name);
 
     std::vector<Component*>& get_components(std::string component_type_name);
+    
+    unsigned char layer() {return m_layer;}
+    void set_layer(unsigned char layer) {m_layer = layer;}
 private:
     std::string m_name;
     std::unordered_map<std::string, std::vector<Component*>> m_components;
+    unsigned char m_layer;
 
 };
 
