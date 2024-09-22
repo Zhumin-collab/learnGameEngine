@@ -23,13 +23,35 @@
 #include "component/transform.h"
 #include "component/game_object.h"
 #include "component/component.h"
-
-
+#include "control/input.h"
+#include "control/key_code.h"
 
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    Input::RecordKey(key, action);
+}
+
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    Input::RecordKey(button, action);
+    std::cout<<"mouse_button_callback:"<<button<<","<<action<<std::endl;
+}
+
+void mouse_move_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    Input::set_mousePosition(xpos, ypos);
+}
+
+void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Input::set_mouse_scroll(yoffset);
+}
+
 
 GLFWwindow* window;
 
@@ -56,6 +78,12 @@ void init_opengl()
     gladLoadGL(glfwGetProcAddress);
 
     glfwSwapInterval(1);
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window, mouse_scroll_callback);
+    glfwSetCursorPosCallback(window, mouse_move_callback);
+
 }
 
 
@@ -91,11 +119,14 @@ int main()
     auto camera_2 = dynamic_cast<Camera*>(go_camera_2->add_component("Camera"));
     camera_2->set_clear_flag(GL_DEPTH_BUFFER_BIT);
 
-    camera_1->set_depth(1);
-    camera_2->set_depth(2);
+    camera_1->set_depth(0);
+    camera_2->set_depth(1);
 
     camera_1->set_chulling_mask(0x01);
-    camera_2->set_chulling_mask(0x01);
+    camera_2->set_chulling_mask(0x02);
+
+    vec2_ushort last_frame_mouse_position = Input::mousePosition();
+
 
     while(!glfwWindowShouldClose(window))
     {
@@ -110,16 +141,37 @@ int main()
 
         camera_1->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
         camera_1->SetProjection(60.f, ratio, 1.f, 1000.f);
-        camera_1->clear();
         
         camera_2->SetView(glm::vec3(transform_camera_2->position().x,0,0), glm::vec3(0.f, 1.f, 0.f));
         camera_2->SetProjection(60.f, ratio, 1.f, 1000.f);
 
-        static float rotate_eulerAngle = 0.f;
-        rotate_eulerAngle += 0.1f;
-        glm::vec3 rotation = transform->rotation();
-        rotation.y = rotate_eulerAngle;
-        transform->set_rotation(rotation);
+        if(Input::GetKeyDown(KEY_CODE_R))
+        {
+            static float rotate_eulerAngle = 0.f;
+            rotate_eulerAngle += 0.1f;
+            glm::vec3 rotation = transform->rotation();
+            rotation.y = rotate_eulerAngle;
+            transform->set_rotation(rotation);
+        }
+
+        if(Input::GetKeyDown(KEY_CODE_LEFT_ALT)&& Input::GetMouseButtonDown(MOUSE_BUTTON_LEFT))
+        {
+            float degrees = Input::mousePosition().x - last_frame_mouse_position.x;
+            glm::mat4 old_mat4 = glm::mat4(1.f);
+
+            glm::mat4 rotate_mat4 = glm::rotate(old_mat4, glm::radians(degrees), glm::vec3(0.f, 1.f, 0.f));
+            glm::vec4 old_pos = glm::vec4(transform_camera->position(), 1.f);
+            glm::vec4 new_pos = rotate_mat4 * old_pos;
+            transform_camera->set_position(glm::vec3(new_pos));
+
+        }
+
+        last_frame_mouse_position = Input::mousePosition();
+
+        transform_camera->set_position(transform_camera->position() * ((10 - Input::mouse_scroll()) * 0.1f));
+
+
+        Input::Update();
         
         Camera::Foreach([&](){
             mesh_render->Render();

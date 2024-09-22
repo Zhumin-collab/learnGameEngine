@@ -37,6 +37,7 @@ add_executable(LearnGameEngine
                 src/component/game_object.cpp
                 src/component/component.cpp
                 src/renderer/camera.cpp
+                src/control/input.cpp
                 )
 
 target_include_directories(LearnGameEngine PRIVATE src)
