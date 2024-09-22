@@ -11,6 +11,10 @@ public:
     GameObject* game_object() { return m_game_object; }
     void set_game_object(GameObject* game_object) { m_game_object = game_object; }
 
+    virtual void Awake();
+
+    virtual void Update();
+
 private:
     GameObject* m_game_object;
 };

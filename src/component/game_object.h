@@ -21,31 +21,27 @@ public:
 
     Component* add_component(std::string m_component_type_name);
 
-    template<class T>
-    T* add_component(){
-        T* component = new T();
-        rttr::type t = rttr::type::get(*component);
-        std::string component_type_name = t.get_name().to_string();
-        component->set_game_object(this);
-        if(m_components.find(component_type_name) == m_components.end()){
-            std::vector<Component*> components;
-            components.push_back(component);
-            m_components[component_type_name] = components;
-        }else{
-            m_components[component_type_name].push_back(component);
-        }
-        return component;
-    }
     Component* get_component(std::string component_type_name);
 
     std::vector<Component*>& get_components(std::string component_type_name);
     
     unsigned char layer() {return m_layer;}
     void set_layer(unsigned char layer) {m_layer = layer;}
+
+    /// @brief 遍历所有组件
+    /// @param func 需要执行的函数
+
+    void ForeachComponent(std::function<void(Component* component)> func);
+
+    /// @brief 遍历所有camera组件
+    /// @param func 需要执行的函数
+    static void Foreach(std::function<void(GameObject* game_object)> func);
 private:
     std::string m_name;
     std::unordered_map<std::string, std::vector<Component*>> m_components;
     unsigned char m_layer;
+
+    static std::vector<GameObject*> m_game_objects;
 
 };
 

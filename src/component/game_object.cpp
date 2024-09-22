@@ -50,3 +50,20 @@ Component* GameObject::get_component(std::string component_type_name){
     }
     return m_components[component_type_name][0];
 }
+
+void GameObject::ForeachComponent(std::function<void(Component* component)> func){
+    for(auto it:m_components)
+    {
+        for(auto component:it.second)
+        {
+            func(component);
+        }
+    }
+}
+
+void GameObject::Foreach(std::function<void(GameObject* game_object)> func){
+    for(auto game_object:m_game_objects)
+    {
+        func(game_object);
+    }
+}
