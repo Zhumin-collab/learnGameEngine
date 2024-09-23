@@ -6,7 +6,8 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include <rttr/registration>
+#include <list>
+#include <functional>
 
 class Component;
 class GameObject {
@@ -41,7 +42,7 @@ private:
     std::unordered_map<std::string, std::vector<Component*>> m_components;
     unsigned char m_layer;
 
-    static std::vector<GameObject*> m_game_objects;
+    static std::list<GameObject*> m_game_objects;
 
 };
 

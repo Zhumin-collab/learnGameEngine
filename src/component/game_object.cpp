@@ -8,12 +8,16 @@
 
 #include <rttr/registration>
 
-GameObject::GameObject() {
+std::list<GameObject*> GameObject::m_game_objects;
+
+GameObject::GameObject():m_layer(0x01) {
 
 }
 
 GameObject::GameObject(const std::string& name):m_layer(0x01){
     set_name(name);
+
+    m_game_objects.push_back(this);
 }   
 
 GameObject::~GameObject() {
@@ -34,6 +38,8 @@ Component* GameObject::add_component(std::string component_type_name){
     }else{
         m_components[component_type_name].push_back(component);
     }
+    
+    component->Awake();
     return component;
 }
 

@@ -82,10 +82,30 @@ void Application::Update()
     Input::Update();
 }
 
+
+void Application::Render()
+{
+    Camera::Foreach([&](){
+        GameObject::Foreach([](GameObject* game_object){
+            auto component = game_object->get_component("MeshRender");
+            if(component == nullptr)
+            {
+                return;
+            }
+            auto mesh_render = dynamic_cast<MeshRender*>(component);
+            if(mesh_render == nullptr)
+            {
+                return;
+            }
+            mesh_render->Render();
+        });
+    });
+}
 void Application::Run()
 {
     while(!glfwWindowShouldClose(m_window))
     {
+
         Update();
         Render();
 

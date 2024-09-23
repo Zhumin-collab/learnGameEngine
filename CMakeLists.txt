@@ -26,12 +26,14 @@ add_library(glad STATIC depends/glad/src/glad_gl.c)
 link_directories("depends/glfw/libs" "depends/rttr/lib")
 
 add_executable(LearnGameEngine 
-                src/main.cpp 
+                example/main.cpp 
+                example/login_scene.cpp
                 src/renderer/texture2d.cpp 
                 src/renderer/mesh_filter.cpp
                 src/renderer/material.cpp 
                 src/renderer/shader.cpp 
                 src/utils/application.cpp
+                src/utils/screen.cpp
                 src/renderer/mesh_render.cpp
                 src/component/transform.cpp
                 src/component/game_object.cpp
