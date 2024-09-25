@@ -1,11 +1,17 @@
 
 #include <memory>
+#include <glad/gl.h>
+
+#include <GLFW/glfw3.h>
+
 #include "component/game_object.h"
 #include "renderer/camera.h"
 #include "renderer/mesh_render.h"
 #include "control/input.h"
 #include "application.h"
 #include "screen.h"
+#include "utils/debug.h"
+
 
 
 std::string Application::m_data_path;
@@ -53,6 +59,7 @@ void Application::InitOpengl()
     m_window = glfwCreateWindow(960, 640, "Simple example", NULL, NULL);
     if (!m_window)
     {
+        DEBUG_LOG_ERROR("glfwCreateWindow error!");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -60,6 +67,8 @@ void Application::InitOpengl()
     glfwMakeContextCurrent(m_window);
     gladLoadGL(glfwGetProcAddress);
 
+
+    UpdateScreenSize();
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(m_window, key_callback);

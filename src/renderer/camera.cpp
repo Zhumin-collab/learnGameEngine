@@ -25,8 +25,9 @@ Camera::Camera():
     m_clear_flag(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT),
     m_chulling_mask(0x01)
 {
-    if(!m_cameras.empty())
+    if(!m_cameras.empty()){
         m_depth = m_cameras.back()->depth() + 1;
+    }
     m_cameras.push_back(this);
 }
 
@@ -67,6 +68,9 @@ void Camera::Foreach(std::function<void()> func)
 
 void Camera::set_depth(unsigned char depth)
 {
+    if(m_depth == depth){
+        return;
+    }
     m_depth = depth;
     Sort();
 }

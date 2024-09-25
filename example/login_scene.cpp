@@ -35,18 +35,19 @@ void LoginScene::Awake()
     
     m_transform_camera1 = dynamic_cast<Transform*>(game_object->add_component("Transform"));
     m_transform_camera1->set_position(glm::vec3(0,0,10));
+
     m_camera_1 = dynamic_cast<Camera*>(game_object->add_component("Camera"));
     m_camera_1->set_depth(0);
     m_last_mouse_position = Input::mousePosition();
 
     CreateFishSoupPot();
-    CreateFont();
+    //CreateFont();
 
 }
 
 void LoginScene::CreateFishSoupPot()
 {
-    GameObject* game_object = new GameObject("fish_soup_pot");
+    GameObject* game_object = new GameObject("fishsoup_pot");
     game_object->set_layer(0x01);
 
     m_transform = dynamic_cast<Transform*>(game_object->add_component("Transform"));
@@ -63,7 +64,7 @@ void LoginScene::CreateFishSoupPot()
 void LoginScene::CreateFont()
 {
     std::vector<MeshFilter::Vertex> vertices = {
-        {{-1.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
+        {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
         {{1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 0.f}},
         {{1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 1.f}},
         {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}
@@ -78,7 +79,7 @@ void LoginScene::CreateFont()
     go->set_layer(0x01);
 
     auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
-    transform->set_position(glm::vec3(2, 0, 0));
+    transform->set_position(glm::vec3(2.f, 0.f, 0.f));
 
     auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
     mesh_filter->CreateMesh(vertices, indexs);
