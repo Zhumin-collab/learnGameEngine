@@ -52,11 +52,11 @@ void LoginScene::CreateFishSoupPot()
     m_transform = dynamic_cast<Transform*>(game_object->add_component("Transform"));
 
     MeshFilter* mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component("MeshFilter"));
-    mesh_filter->loadMesh("mesh/fish_soup_pot.mesh");
+    mesh_filter->loadMesh("mesh/fishsoup_pot.mesh");
 
     MeshRender* mesh_render = dynamic_cast<MeshRender*>(game_object->add_component("MeshRender"));
     auto material = new Material();
-    material->Parse("material/fish_soup_pot.xml");
+    material->Parse("material/fishsoup_pot.mat");
     mesh_render->SetMaterial(material);
 }
 
@@ -81,13 +81,22 @@ void LoginScene::CreateFont()
     transform->set_position(glm::vec3(2, 0, 0));
 
     auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
-    mesh_filter->createMesh(vertices, indexs);
+    mesh_filter->CreateMesh(vertices, indexs);
+
+    m_material = new Material();
+    m_material->Parse("material/quad_draw_font.mat");
+
+    auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
+    mesh_render->SetMaterial(m_material);
+
+    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 500);
+    font->LoadCharacter('A');
+
+    m_material->SetTexture("u_diffuse_texture",font->font_texture());
 }
 
 void LoginScene::Update()
 {
-    m_camera_2->SetView(glm::vec3(m_transform_camera2->position().x,0,0), glm::vec3(0.f, 1.f, 0.f));
-    m_camera_2->SetProjection(60.f, Screen::aspect_ratio(), 1.f, 1000.f);
 
     m_camera_1->SetView(glm::vec3(0,0,0), glm::vec3(0.f, 1.f, 0.f));
     m_camera_1->SetProjection(60.f, Screen::aspect_ratio(), 1.f, 1000.f);

@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <string.h>
 
 #include "font.h"
 #include "freetype/ftbitmap.h"
@@ -55,7 +56,7 @@ Font* Font::LoadFromFile(std::string font_file_path, unsigned short font_size)
     m_font_map[font_file_path] = font;
 
     unsigned char* pixels = (unsigned char*)malloc(font->m_font_texture_width * font->m_font_texture_width);
-    memeset(pixels, 0, font->m_font_texture_width * font->m_font_texture_width);
+    memset(pixels, 0, font->m_font_texture_width * font->m_font_texture_width);
     font->m_font_texture = Texture2D::Create(font->m_font_texture_width, font->m_font_texture_width, GL_RED, GL_RED, GL_UNSIGNED_BYTE, pixels);
     free(pixels);
 
