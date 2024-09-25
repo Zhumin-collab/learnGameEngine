@@ -22,7 +22,9 @@ Material::~Material()
 
 void Material::Parse(std::string material_name)
 {
-    rapidxml::file<> xmlFile((Application::data_path() + material_name).c_str());
+    std::string name = Application::data_path() + material_name;
+    std::cout << name;
+    rapidxml::file<> xmlFile(name.c_str());
 
     rapidxml::xml_document<> doc;
     doc.parse<0>(xmlFile.data());

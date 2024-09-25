@@ -52,11 +52,11 @@ void LoginScene::CreateFishSoupPot()
     m_transform = dynamic_cast<Transform*>(game_object->add_component("Transform"));
 
     MeshFilter* mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component("MeshFilter"));
-    mesh_filter->loadMesh("mesh/fish_soup_pot.mesh");
+    mesh_filter->loadMesh("mesh/fishsoup_pot.mesh");
 
     MeshRender* mesh_render = dynamic_cast<MeshRender*>(game_object->add_component("MeshRender"));
     auto material = new Material();
-    material->Parse("material/fish_soup_pot.xml");
+    material->Parse("material/fishsoup_pot.mat");
     mesh_render->SetMaterial(material);
 }
 

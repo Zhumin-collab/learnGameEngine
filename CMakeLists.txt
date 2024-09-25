@@ -12,7 +12,7 @@ set(STB_DIR "depends/stb/include")
 set(TIMETOOL_DIR "depends/timetool")
 set(XML_DIR "depends/rapidxml/include")
 set(RTTR "depends/rttr/include")
-set(FREETYPE "depends/freetype/include")
+set(FREETYPE "depends/freetype/include/freetype2")
 set(SPDLOG "depends/spdlog/include")
 
 include_directories(${GLFW_DIR} 

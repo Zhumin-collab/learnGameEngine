@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
-#include "freetype/ftglyph.h"
+#include <freetype/ftglyph.h>
 
 class Texture2D;
 class Font

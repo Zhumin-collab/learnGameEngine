@@ -6,6 +6,7 @@
 
 class Transform;
 class Camera;
+class Material;
 class LoginScene : public Component
 {
 public:

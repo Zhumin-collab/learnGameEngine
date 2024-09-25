@@ -7,7 +7,7 @@
 
 int main(void)
 {
-    Application::set_data_path("E:/learnGameEngine/data/");
+    Application::set_data_path("D:/learnGameEngine/data/");
     Application::InitOpengl();
 
     GameObject* go = new GameObject("LoginScene");

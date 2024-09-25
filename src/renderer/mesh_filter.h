@@ -3,7 +3,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
-
+#include <vector>
 #include "component/component.h"
 
 class MeshFilter: public Component
