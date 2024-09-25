@@ -34,7 +34,7 @@ public:
 
     void loadMesh(std::string mesh_file_path);
 
-    void CreateMesh()
+    void CreateMesh(std::vector<Vertex> &vertices, std::vector<unsigned short> &vertex_indexs);
 
     Mesh* mesh() { return m_mesh; };
     
