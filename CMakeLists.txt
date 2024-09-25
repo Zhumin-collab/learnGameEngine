@@ -12,6 +12,8 @@ set(STB_DIR "depends/stb/include")
 set(TIMETOOL_DIR "depends/timetool")
 set(XML_DIR "depends/rapidxml/include")
 set(RTTR "depends/rttr/include")
+set(FREETYPE "depends/freetype/include")
+set(SPDLOG "depends/spdlog/include")
 
 include_directories(${GLFW_DIR} 
                     ${GLAD_DIR} 
@@ -19,11 +21,14 @@ include_directories(${GLFW_DIR}
                     ${STB_DIR} 
                     ${TIMETOOL_DIR} 
                     ${XML_DIR}
-                    ${RTTR})
+                    ${RTTR}
+                    ${FREETYPE}
+                    ${SPDLOG}
+                    )
 
 add_library(glad STATIC depends/glad/src/glad_gl.c)
 
-link_directories("depends/glfw/libs" "depends/rttr/lib")
+link_directories("depends/glfw/libs" "depends/rttr/lib" "depends/freetype/lib" "depends/spdlog/lib")
 
 add_executable(LearnGameEngine 
                 example/main.cpp 
@@ -40,8 +45,10 @@ add_executable(LearnGameEngine
                 src/component/component.cpp
                 src/renderer/camera.cpp
                 src/control/input.cpp
+                src/renderer/font.cpp
+                src/utils/debug.cpp
                 )
 
 target_include_directories(LearnGameEngine PRIVATE src)
 
-target_link_libraries(LearnGameEngine PRIVATE glfw3 glad rttr_core_d)
+target_link_libraries(LearnGameEngine PRIVATE glfw3 glad rttr_core_d freetyped spdlogd)

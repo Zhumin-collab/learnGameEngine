@@ -18,8 +18,10 @@
 #include "renderer/mesh_filter.h"
 #include "renderer/mesh_render.h"
 #include "component/game_object.h"
+#include "renderer/texture2d.h"
 #include "component/transform.h"
 #include "control/key_code.h"
+#include "renderer/font.h"
 
 RTTR_REGISTRATION
 {
@@ -29,37 +31,57 @@ RTTR_REGISTRATION
 
 void LoginScene::Awake()
 {
-    GameObject* game_object = new GameObject("fishsoup_pot");
+    GameObject* game_object = new GameObject("main_camera");
+    
+    m_transform_camera1 = dynamic_cast<Transform*>(game_object->add_component("Transform"));
+    m_transform_camera1->set_position(glm::vec3(0,0,10));
+    m_camera_1 = dynamic_cast<Camera*>(game_object->add_component("Camera"));
+    m_camera_1->set_depth(0);
+    m_last_mouse_position = Input::mousePosition();
+
+    CreateFishSoupPot();
+    CreateFont();
+
+}
+
+void LoginScene::CreateFishSoupPot()
+{
+    GameObject* game_object = new GameObject("fish_soup_pot");
     game_object->set_layer(0x01);
 
     m_transform = dynamic_cast<Transform*>(game_object->add_component("Transform"));
 
-    auto mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component("MeshFilter"));
-    mesh_filter->loadMesh("model/fishsoup_pot.mesh");
+    MeshFilter* mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component("MeshFilter"));
+    mesh_filter->loadMesh("mesh/fish_soup_pot.mesh");
 
-    auto mesh_render = dynamic_cast<MeshRender*>(game_object->add_component("MeshRender"));
-    Material* material = new Material();
-    material->Parse("material/fishsoup_pot.mat");
+    MeshRender* mesh_render = dynamic_cast<MeshRender*>(game_object->add_component("MeshRender"));
+    auto material = new Material();
+    material->Parse("material/fish_soup_pot.xml");
     mesh_render->SetMaterial(material);
+}
 
-    auto go_camera_2 = new GameObject("main_camera");
-    m_transform_camera2 = dynamic_cast<Transform*>(go_camera_2->add_component("Transform"));
-    m_transform_camera2->set_position(glm::vec3(1.f, 0.f, 10.f));
+void LoginScene::CreateFont()
+{
+    std::vector<MeshFilter::Vertex> vertices = {
+        {{-1.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
+        {{1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 0.f}},
+        {{1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 1.f}},
+        {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}
+    };
 
-    m_camera_2 = dynamic_cast<Camera*>(go_camera_2->add_component("Camera"));
-    m_camera_2->set_clear_flag(GL_DEPTH_BUFFER_BIT);
-    m_camera_2->set_depth(1);
-    m_camera_2->set_chulling_mask(0x02);
+    std::vector<unsigned short> indexs = {
+        0, 1, 2,
+        0, 2, 3
+    };
 
-    auto go_camera_1 = new GameObject("main_camera");
-    m_transform_camera1 = dynamic_cast<Transform*>(go_camera_1->add_component("Transform"));
-    m_transform_camera1->set_position(glm::vec3(0.f, 0.f, 10.f));
+    auto go = new GameObject("quad_draw_font");
+    go->set_layer(0x01);
 
-    m_camera_1 = dynamic_cast<Camera*>(go_camera_1->add_component("Camera"));
-    m_camera_1->set_depth(0);
+    auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
+    transform->set_position(glm::vec3(2, 0, 0));
 
-    m_last_mouse_position = Input::mousePosition();
-
+    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
+    mesh_filter->createMesh(vertices, indexs);
 }
 
 void LoginScene::Update()

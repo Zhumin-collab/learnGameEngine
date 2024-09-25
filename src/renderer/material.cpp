@@ -79,3 +79,16 @@ void Material::SetUniform1i(std::string uniform_name, int value)
 {
     m_uniform1i_map[uniform_name] = value;
 }
+
+void Material::SetTexture(std::string property, Texture2D* texture)
+{
+    for(auto& pair:m_textures)
+    {
+        if(pair.first == property)
+        {
+            delete pair.second;
+            pair.second = texture;
+            return;
+        }
+    }
+}

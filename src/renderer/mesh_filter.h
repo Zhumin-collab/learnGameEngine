@@ -33,6 +33,9 @@ public:
     };
 
     void loadMesh(std::string mesh_file_path);
+
+    void CreateMesh()
+
     Mesh* mesh() { return m_mesh; };
     
 private:

@@ -19,6 +19,8 @@ public:
     void SetUniformMatrix4fv(std::string uniform_name, float* value);
     void SetUniform1i(std::string uniform_name, int value);
 
+    void SetTexture(std::string property, Texture2D* texture);
+
     Shader* shader() { return m_shader; }
 
     std::vector<std::pair<std::string, Texture2D*>> textures() { return m_textures; }

@@ -12,15 +12,7 @@
 #include <glad/gl.h>
 
 
-struct TpcFileHead
-{
-    char type[3];
-    int mipmap_level;
-    int width;
-    int height;
-    int gl_texture_format;
-    int compress_size;
-};
+
 
 class Texture2D
 {
@@ -29,12 +21,22 @@ private:
     {
         
     };
-    ~Texture2D(){};
 
 public:
-    static Texture2D* LoadFromFile(std::string& image_file_path);
+    ~Texture2D();
 
-    static void CompressImageFile(std::string& image_file_path, std::string& output_file_path);
+    void UpdateSubImage(int x,int y,int width,int height,unsigned int client_format,unsigned int data_type,unsigned char* data);
+
+public:
+    struct TpcFileHead
+    {
+        char type[3];
+        int mipmap_level;
+        int width;
+        int height;
+        int gl_texture_format;
+        int compress_size;
+    };
 
     int mip_map_level() { return m_mipmap_level; }
     int width() { return m_width; }
@@ -50,6 +52,11 @@ private:
     int m_mipmap_level;
     
     GLuint m_texture_id; // 纹理ID
+
+public:
+    static Texture2D* LoadFromFile(std::string& image_file_path);
+
+    static Texture2D* Create(unsigned short width,unsigned short height,unsigned int server_format,unsigned int client_format,unsigned int data_type,unsigned char* data);
 
 };
 
