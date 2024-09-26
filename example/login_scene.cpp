@@ -41,7 +41,7 @@ void LoginScene::Awake()
     m_last_mouse_position = Input::mousePosition();
 
     CreateFishSoupPot();
-    //CreateFont();
+    CreateFont();
 
 }
 
@@ -53,7 +53,7 @@ void LoginScene::CreateFishSoupPot()
     m_transform = dynamic_cast<Transform*>(game_object->add_component("Transform"));
 
     MeshFilter* mesh_filter = dynamic_cast<MeshFilter*>(game_object->add_component("MeshFilter"));
-    mesh_filter->loadMesh("mesh/fishsoup_pot.mesh");
+    mesh_filter->loadMesh("model/fishsoup_pot.mesh");
 
     MeshRender* mesh_render = dynamic_cast<MeshRender*>(game_object->add_component("MeshRender"));
     auto material = new Material();
@@ -67,7 +67,7 @@ void LoginScene::CreateFont()
         {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
         {{1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 0.f}},
         {{1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 1.f}},
-        {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}
+        {{-1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}
     };
 
     std::vector<unsigned short> indexs = {
