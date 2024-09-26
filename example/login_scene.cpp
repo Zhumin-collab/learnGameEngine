@@ -72,10 +72,10 @@ void LoginScene::CreateFont()
     {
         offset_x+=2;
         std::vector<MeshFilter::Vertex> vertices = {
-            {{-1.f+offset_x, 2.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->left_top_x, character->right_bottom_y}},
-            {{1.f+offset_x,  2.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->right_bottom_x, character->right_bottom_y}},
-            {{1.f+offset_x,  4.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->right_bottom_x, character->left_top_y}},
-            {{-1.f+offset_x, 4.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->left_top_x, character->left_top_y}}
+            {{-1.f+offset_x, 2.f, 1.f}, {1.f, 0.f, 0.f, 1.f}, {character->left_top_x, character->right_bottom_y}},
+            {{1.f+offset_x,  2.f, 1.f}, {1.f, 0.f, 0.f, 1.f}, {character->right_bottom_x, character->right_bottom_y}},
+            {{1.f+offset_x,  4.f, 1.f}, {0.f, 1.f, 0.f, 1.f}, {character->right_bottom_x, character->left_top_y}},
+            {{-1.f+offset_x, 4.f, 1.f}, {0.f, 1.f, 0.f, 1.f}, {character->left_top_x, character->left_top_y}}
         };
 
         std::vector<unsigned short> indexs = {
