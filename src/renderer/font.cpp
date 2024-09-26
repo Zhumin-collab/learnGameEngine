@@ -65,6 +65,10 @@ Font* Font::LoadFromFile(std::string font_file_path, unsigned short font_size)
 
 void Font::LoadCharacter(char ch)
 {
+    if(m_character_map.find(ch)!=m_character_map.end())
+    {
+        return;
+    }
     FT_Load_Glyph(m_ft_face, FT_Get_Char_Index(m_ft_face, ch), FT_LOAD_DEFAULT);
 
     FT_Glyph ft_glyph;
@@ -74,7 +78,30 @@ void Font::LoadCharacter(char ch)
 
     FT_BitmapGlyph ft_bitmap_glyph = (FT_BitmapGlyph)ft_glyph;
     FT_Bitmap& ft_bitmap = ft_bitmap_glyph->bitmap;
-    m_font_texture->UpdateSubImage(0,0,ft_bitmap.width,ft_bitmap.rows,GL_RED,GL_UNSIGNED_BYTE,ft_bitmap.buffer);
+
+    if(m_font_texture_fill_x + ft_bitmap.width >= m_font_texture_width)
+    {
+        m_font_texture_fill_x = 0;
+        m_font_texture_fill_y += m_font_size;
+    }
+
+    if(m_font_texture_fill_y + m_font_size >= m_font_texture_width)
+    {
+        spdlog::error("font texture is full!");
+        return;
+    }
+
+    m_font_texture->UpdateSubImage(m_font_texture_fill_x,m_font_texture_fill_y,ft_bitmap.width,ft_bitmap.rows,GL_RED,GL_UNSIGNED_BYTE,ft_bitmap.buffer);
+
+    Character* character = new Character(
+        (float)m_font_texture_fill_x / m_font_texture_width,
+        (float)m_font_texture_fill_y / m_font_texture_width,
+        (float)(m_font_texture_fill_x + ft_bitmap.width) / m_font_texture_width,
+        (float)(m_font_texture_fill_y + ft_bitmap.rows) / m_font_texture_width
+    );
+    m_character_map[ch] = character;
+
+    m_font_texture_fill_x += ft_bitmap.width;
 }
 
 Font* Font::GetFont(std::string font_file_path)
@@ -85,4 +112,29 @@ Font* Font::GetFont(std::string font_file_path)
         return iter->second;
     }
     return nullptr;
+}
+
+std::vector<Font::Character*> Font::LoadStr(std::string str)
+{
+    std::vector<Character*> characters;
+    for(auto ch:str)
+    {
+        LoadCharacter(ch);
+    }
+
+    for(auto ch:str)
+    {
+        auto character = m_character_map[ch];
+        if(character!=nullptr)
+        {
+            characters.push_back(character);
+        }
+        else
+        {
+            spdlog::error("character not found: {}", ch);
+            continue;
+        }
+    }
+
+    return characters;
 }

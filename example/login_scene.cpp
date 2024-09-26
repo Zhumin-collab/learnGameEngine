@@ -63,37 +63,45 @@ void LoginScene::CreateFishSoupPot()
 
 void LoginScene::CreateFont()
 {
-    std::vector<MeshFilter::Vertex> vertices = {
-        {{-1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
-        {{1.f, -1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 0.f}},
-        {{1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 1.f}},
-        {{-1.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}
-    };
+    std::string str = "Captain";
+    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 100);
+    auto character_vec = font->LoadStr(str);
 
-    std::vector<unsigned short> indexs = {
-        0, 1, 2,
-        0, 2, 3
-    };
+    int offset_x = 0;
+    for(auto character:character_vec)
+    {
+        offset_x+=2;
+        std::vector<MeshFilter::Vertex> vertices = {
+            {{-1.f+offset_x, 2.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->left_top_x, character->right_bottom_y}},
+            {{1.f+offset_x,  2.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->right_bottom_x, character->right_bottom_y}},
+            {{1.f+offset_x,  4.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->right_bottom_x, character->left_top_y}},
+            {{-1.f+offset_x, 4.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {character->left_top_x, character->left_top_y}}
+        };
 
-    auto go = new GameObject("quad_draw_font");
-    go->set_layer(0x01);
+        std::vector<unsigned short> indexs = {
+            0, 1, 2,
+            0, 2, 3
+        };
 
-    auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
-    transform->set_position(glm::vec3(2.f, 0.f, 0.f));
+        auto go = new GameObject("quad_draw_font");
+        go->set_layer(0x01);
 
-    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
-    mesh_filter->CreateMesh(vertices, indexs);
+        auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
+        transform->set_position(glm::vec3(-8.f, 0.f, 0.f));
 
-    m_material = new Material();
-    m_material->Parse("material/quad_draw_font.mat");
+        auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
+        mesh_filter->CreateMesh(vertices, indexs);
 
-    auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
-    mesh_render->SetMaterial(m_material);
+        m_material = new Material();
+        m_material->Parse("material/quad_draw_font.mat");
 
-    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 500);
-    font->LoadCharacter('A');
+        auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
+        mesh_render->SetMaterial(m_material);
 
-    m_material->SetTexture("u_diffuse_texture",font->font_texture());
+
+
+        m_material->SetTexture("u_diffuse_texture",font->font_texture());
+    }
 }
 
 void LoginScene::Update()
