@@ -51,7 +51,7 @@ private:
     GLuint m_texture_id; // 纹理ID
 
 public:
-    static Texture2D* LoadFromFile(std::string& image_file_path);
+    static Texture2D* LoadFromFile(std::string image_file_path);
 
     static Texture2D* Create(unsigned short width,unsigned short height,unsigned int server_format,unsigned int client_format,unsigned int data_type,unsigned char* data);
 
