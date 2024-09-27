@@ -75,6 +75,12 @@
         "set": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "condition_variable": "cpp",
+        "cstdarg": "cpp",
+        "filesystem": "cpp",
+        "future": "cpp",
+        "source_location": "cpp",
+        "variant": "cpp"
     }
 }

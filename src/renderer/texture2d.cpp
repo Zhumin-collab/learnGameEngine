@@ -15,7 +15,10 @@
 #include "../utils/application.h"
 #include "../utils/debug.h"
 
-
+Texture2D::Texture2D():m_gl_texture_format(0),m_width(0),m_height(0),m_mipmap_level(0),m_texture_id(0)
+{
+    
+}
 Texture2D::~Texture2D()
 {
     if(m_texture_id>0)
@@ -35,11 +38,16 @@ void Texture2D::UpdateSubImage(int x, int y, int width, int height, unsigned int
 }
 Texture2D* Texture2D::LoadFromFile(std::string& image_file_path)
 {
+    if(image_file_path.empty())
+    {
+        DEBUG_LOG_ERROR("image file path is empty");
+        return nullptr;
+    }
     Texture2D* texture2d = new Texture2D();
 
     timetool::StopWatch stopwatch;
     stopwatch.start();
-        std::ifstream in(image_file_path, std::ios::binary);
+        std::ifstream in(Application::data_path()+image_file_path, std::ios::binary);
         TpcFileHead tcp;
         in.read((char*)&tcp, sizeof(TpcFileHead));
         unsigned char* data = (unsigned char*)malloc(tcp.compress_size);
@@ -54,16 +62,17 @@ Texture2D* Texture2D::LoadFromFile(std::string& image_file_path)
     texture2d->m_mipmap_level = tcp.mipmap_level;
 
 
-    glGenTextures(1, &texture2d->m_texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture2d->m_texture_id);
+    glGenTextures(1, &(texture2d->m_texture_id));__CHECK_GL_ERROR__
+    glBindTexture(GL_TEXTURE_2D, texture2d->m_texture_id);__CHECK_GL_ERROR__
 
     stopwatch.restart();
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, tcp.gl_texture_format, tcp.width, tcp.height, 0, tcp.compress_size, data);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, tcp.gl_texture_format, tcp.width, tcp.height, 0, tcp.compress_size, data);__CHECK_GL_ERROR__
+
     stopwatch.stop();
     std::cout << "upload image cost:" << stopwatch.milliseconds() << "ms" << std::endl;
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);__CHECK_GL_ERROR__
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);__CHECK_GL_ERROR__
 
     free(data);
 
@@ -79,11 +88,12 @@ Texture2D* Texture2D::Create(unsigned short width, unsigned short height, unsign
     texture2d->m_height = height;
     texture2d->m_mipmap_level = 0;
 
-    glGenTextures(1, &texture2d->m_texture_id);__CHECK_GL_ERROR__
+    glGenTextures(1, &(texture2d->m_texture_id));__CHECK_GL_ERROR__
     glBindTexture(GL_TEXTURE_2D, texture2d->m_texture_id);__CHECK_GL_ERROR__
     glTexImage2D(GL_TEXTURE_2D, 0, server_format, width, height, 0, client_format, data_type, data);__CHECK_GL_ERROR__
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);__CHECK_GL_ERROR__
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);__CHECK_GL_ERROR__
+    
     return texture2d;
 }

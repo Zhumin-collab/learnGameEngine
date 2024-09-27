@@ -23,7 +23,6 @@ Material::~Material()
 void Material::Parse(std::string material_name)
 {
     std::string name = Application::data_path() + material_name;
-    std::cout << name;
     rapidxml::file<> xmlFile(name.c_str());
 
     rapidxml::xml_document<> doc;
@@ -62,10 +61,9 @@ void Material::Parse(std::string material_name)
             return;
         }
 
-        std::string shader_peoperty_name = texture_name_attribute->value();
-        std::string texture_image_path = Application::data_path() + texture_image_attribute->value();
-        Texture2D* texture2d = Texture2D::LoadFromFile(texture_image_path);
-        m_textures.push_back(std::make_pair(shader_peoperty_name, texture2d));
+        std::string shader_property_name=texture_name_attribute->value();
+        std::string image_path=texture_image_attribute->value();
+        m_textures.push_back(std::make_pair(texture_name_attribute->value(), image_path.empty()? nullptr:Texture2D::LoadFromFile(image_path)));
 
         material_texture_node = material_texture_node->next_sibling("texture");
 

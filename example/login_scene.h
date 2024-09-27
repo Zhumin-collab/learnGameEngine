@@ -10,7 +10,7 @@ class Material;
 class LoginScene : public Component
 {
 public:
-    LoginScene() {};
+    LoginScene():Component() {};
     void Awake();
     void Update();
 

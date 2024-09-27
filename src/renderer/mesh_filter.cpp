@@ -56,9 +56,9 @@ void MeshFilter::CreateMesh(std::vector<Vertex> &vertices, std::vector<unsigned 
 
     unsigned short vertex_data_size = sizeof(Vertex) * vertices.size();
     m_mesh->vertexs_data = static_cast<Vertex*>(malloc(vertex_data_size));
-    memcpy(m_mesh->vertexs_data, vertices.data(), vertex_data_size);
+    memcpy(m_mesh->vertexs_data, &vertices[0], vertex_data_size);
 
     unsigned short vertex_index_data_size = sizeof(Vertex) * vertices.size();
     m_mesh->vertex_index_data = static_cast<unsigned short*>(malloc(vertex_index_data_size));
-    memcpy(m_mesh->vertex_index_data, vertex_indexs.data(), vertex_index_data_size);
+    memcpy(m_mesh->vertex_index_data, &vertex_indexs[0], vertex_index_data_size);
 }

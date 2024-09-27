@@ -17,10 +17,7 @@
 class Texture2D
 {
 private:
-    Texture2D():m_gl_texture_format(GL_RGBA),m_width(0),m_height(0),m_mipmap_level(0),m_texture_id(0)
-    {
-        
-    };
+    Texture2D();
 
 public:
     ~Texture2D();
