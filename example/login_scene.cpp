@@ -22,6 +22,7 @@
 #include "component/transform.h"
 #include "control/key_code.h"
 #include "renderer/font.h"
+#include "ui/ui_image.h"
 
 RTTR_REGISTRATION
 {
@@ -109,45 +110,21 @@ void LoginScene::CreateUI()
 {
     auto go_camera_ui = new GameObject("ui_camera");
     auto transform_camera_ui = dynamic_cast<Transform*>(go_camera_ui->add_component("Transform"));
-    transform_camera_ui->set_position(glm::vec3(0,0,10));
+    transform_camera_ui->set_position(glm::vec3(0.f, 0.f, 10.f));
 
     auto camera_ui = dynamic_cast<Camera*>(go_camera_ui->add_component("Camera"));
     camera_ui->set_depth(1);
     camera_ui->set_chulling_mask(0x02);
     camera_ui->set_clear_flag(GL_DEPTH_BUFFER_BIT);
+    camera_ui->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+    camera_ui->SetOrthographic(-Screen::width()/2.,Screen::width()/2.,-Screen::height()/2.,Screen::height()/2.,-100.f,100.f);
 
-    camera_ui->SetView(glm::vec3(0,0,0), glm::vec3(0.f, 1.f, 0.f));
+    auto go_ui = new GameObject("ui");
+    go_ui->set_layer(0x02);
+    go_ui->add_component("Transform");
 
-    camera_ui->SetOrthographic(-Screen::width()/2., Screen::width()/2., -Screen::height()/2., Screen::height()/2., -100.f, 100.f);
-
-    auto texture2D = Texture2D::LoadFromFile("images/mod_bag.cpt");
-
-    std::vector<MeshFilter::Vertex> vertex_vector = {
-        {{0.f,0.f,0.f},{1.f,1.f,1.f,1.f},{0.f,0.f}},
-        {{texture2D->width(),0.f,0.f},{1.f,1.f,1.f,1.f},{1.f,0.f}},
-        {{texture2D->width(),texture2D->height(),0.f},{1.f,1.f,1.f,1.f},{1.f,1.f}},
-        {{0.f,texture2D->height(),0.f},{1.f,1.f,1.f,1.f},{0.f,1.f}}
-    };
-
-    std::vector<unsigned short> index_vector = {
-        0,1,2,
-        0,2,3
-    };
-
-    auto go = new GameObject("image_mod_bag");
-    go->set_layer(0x02);
-
-    go->add_component("Transform");
-
-    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
-    mesh_filter->CreateMesh(vertex_vector, index_vector);
-
-    auto material = new Material();
-    material->Parse("material/ui_image.mat");
-
-    auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
-    mesh_render->SetMaterial(material);
-    material->SetTexture("u_diffuse_texture", texture2D);
+    auto ui_image = dynamic_cast<UIImage*>(go_ui->add_component("UIImage"));
+    ui_image->set_texture(Texture2D::LoadFromFile("images/mod_bag.cpt"));
 }
 
 void LoginScene::Update()

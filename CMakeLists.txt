@@ -47,6 +47,7 @@ add_executable(LearnGameEngine
                 src/control/input.cpp
                 src/renderer/font.cpp
                 src/utils/debug.cpp
+                src/ui/ui_image.cpp
                 )
 
 target_include_directories(LearnGameEngine PRIVATE src)
