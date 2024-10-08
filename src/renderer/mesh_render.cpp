@@ -113,6 +113,10 @@ void MeshRender::Render()
 
     glUseProgram(gl_program_id);__CHECK_GL_ERROR__
     {
+        game_object()->ForeachComponent([](Component* component){
+            component->OnPreRender();
+        });
+
         glEnable(GL_DEPTH_TEST);__CHECK_GL_ERROR__
         glEnable(GL_CULL_FACE);__CHECK_GL_ERROR__
         glEnable(GL_BLEND);__CHECK_GL_ERROR__
@@ -135,6 +139,10 @@ void MeshRender::Render()
             glDrawElements(GL_TRIANGLES, mesh_filter->mesh()->vertex_index_num, GL_UNSIGNED_SHORT, 0);__CHECK_GL_ERROR__
         }
         glBindVertexArray(0);__CHECK_GL_ERROR__
+
+        game_object()->ForeachComponent([](Component* component){
+            component->OnPostRender();
+        });
 
     }
 }
