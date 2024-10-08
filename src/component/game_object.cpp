@@ -63,8 +63,9 @@ Component* GameObject::get_component(std::string component_type_name){
 void GameObject::ForeachComponent(std::function<void(Component* component)> func){
     for(auto it:m_components)
     {
-        for(auto component:it.second)
+        for(auto &iter:it.second)
         {
+            Component* component = iter;
             func(component);
         }
     }
@@ -79,7 +80,7 @@ bool GameObject::set_parent(GameObject* parent){
 }
 
 void GameObject::Foreach(std::function<void(GameObject* game_object)> func){
-    m_game_objects.Post(m_game_objects.root_node(),[&](Tree::Node* node){
+    m_game_objects.Post(m_game_objects.root_node(),[&func](Tree::Node* node){
         auto n = node;
         GameObject* game_object = dynamic_cast<GameObject*>(n);
         func(game_object);
@@ -90,7 +91,7 @@ GameObject* GameObject::Find(std::string name)
 {
     GameObject* game_object_find = nullptr;
 
-    m_game_objects.Find(m_game_objects.root_node(),[&](Tree::Node* node){
+    m_game_objects.Find(m_game_objects.root_node(),[&name](Tree::Node* node){
         GameObject* game_object = dynamic_cast<GameObject*>(node);
         if(game_object->name() == name)
         {
