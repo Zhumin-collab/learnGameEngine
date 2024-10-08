@@ -9,8 +9,12 @@
 #include <list>
 #include <functional>
 
+#include "data_structs/tree.h"
+
+
 class Component;
-class GameObject {
+class GameObject : public Tree::Node
+{
 public:
     GameObject();
     GameObject(const std::string& name);
@@ -37,12 +41,21 @@ public:
     /// @brief 遍历所有camera组件
     /// @param func 需要执行的函数
     static void Foreach(std::function<void(GameObject* game_object)> func);
+
+    bool active() {return m_active;}
+    void set_active(bool active) {m_active = active;}
+
+    bool set_parent(GameObject* parent);
+
+    static GameObject* Find(std::string name);
+
 private:
     std::string m_name;
     std::unordered_map<std::string, std::vector<Component*>> m_components;
     unsigned char m_layer;
+    bool m_active;
 
-    static std::list<GameObject*> m_game_objects;
+    static Tree m_game_objects;
 
 };
 

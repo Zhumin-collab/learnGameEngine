@@ -1,43 +1,47 @@
 //
-// created by yzm on 2024/9/28
+// created by yzm on 2024/10/7
 //
 
 #define RTTR_DLL
+
+#include <vector>
 #include <rttr/registration>
 
-#include "ui_image.h"
-#include "../utils/debug.h"
-#include "../renderer/mesh_filter.h"
-#include "../renderer/mesh_render.h"
-#include "../renderer/texture2d.h"
-#include "../component/game_object.h"
-#include "../renderer/material.h"
-#include "../render_device/render_device.h"
+#include "ui_mask.h"
+#include "component/game_object.h"
+#include "renderer/texture2d.h"
+#include "renderer/material.h"
+#include "renderer/mesh_render.h"
+#include "render_device/render_device.h"
+#include "utils/debug.h"
 
-RTTR_REGISTRATION
-{
-    rttr::registration::class_<UIImage>("UIImage")
+RTTR_REGISTRATION{
+    rttr::registration::class_<UIMask>("UIMask")
         .constructor<>()(rttr::policy::ctor::as_raw_ptr);
 }
 
-UIImage::UIImage()
+UIMask::UIMask()
 {
+
 }
 
-UIImage::~UIImage()
+UIMask::~UIMask()
 {
+
 }
 
+void UIMask::OnEnable()
+{
 
-void UIImage::Update()
+}
+
+void UIMask::Update()
 {
     Component::Update();
     if(m_texture==nullptr)
     {
-        SPDLOG_INFO("ui texture is null");
         return;
     }
-
     MeshFilter* mesh_filter = dynamic_cast<MeshFilter*>(game_object()->get_component("MeshFilter"));
     if(mesh_filter==nullptr)
     {
@@ -57,24 +61,30 @@ void UIImage::Update()
         mesh_filter->CreateMesh(vertex_vector, index_vector);
 
         auto material = new Material();
-        material->Parse("material/ui_image.mat");
+        material->Parse("material/ui_mask.mat");
         material->SetTexture("u_diffuse_texture", m_texture);
 
         auto mesh_render = dynamic_cast<MeshRender*>(game_object()->add_component("MeshRender"));
-        mesh_render->SetMaterial(material);    
+        mesh_render->SetMaterial(material);
     }
 }
 
-void UIImage::OnPreRender()
+void UIMask::OnPreRender()
 {
     Component::OnPreRender();
-    glStencilFunc(GL_EQUAL, 0x1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    RenderDevice::instance()->Enable(RenderDevice::STENCIL_TEST);
+    glClearStencil(0);__CHECK_GL_ERROR__
+    glStencilFunc(GL_NEVER,0x0,0xFF);__CHECK_GL_ERROR__
+    glStencilOp(GL_INCR,GL_INCR,GL_INCR);__CHECK_GL_ERROR__
 
 }
 
-void UIImage::OnPostRender()
+void UIMask::OnPostRender()
 {
     Component::OnPostRender();
+}
+
+void UIMask::OnDisable()
+{
     RenderDevice::instance()->Disable(RenderDevice::STENCIL_TEST);
 }

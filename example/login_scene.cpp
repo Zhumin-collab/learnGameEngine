@@ -23,6 +23,7 @@
 #include "control/key_code.h"
 #include "renderer/font.h"
 #include "ui/ui_image.h"
+#include "ui/ui_mask.h"
 
 RTTR_REGISTRATION
 {
@@ -115,16 +116,27 @@ void LoginScene::CreateUI()
     auto camera_ui = dynamic_cast<Camera*>(go_camera_ui->add_component("Camera"));
     camera_ui->set_depth(1);
     camera_ui->set_chulling_mask(0x02);
-    camera_ui->set_clear_flag(GL_DEPTH_BUFFER_BIT);
+    
+    camera_ui->set_clear_flag(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
     camera_ui->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
     camera_ui->SetOrthographic(-Screen::width()/2.,Screen::width()/2.,-Screen::height()/2.,Screen::height()/2.,-100.f,100.f);
 
-    auto go_ui = new GameObject("ui");
+    auto go_ui = new GameObject("image_mod_bag");
     go_ui->set_layer(0x02);
     go_ui->add_component("Transform");
 
     auto ui_image = dynamic_cast<UIImage*>(go_ui->add_component("UIImage"));
     ui_image->set_texture(Texture2D::LoadFromFile("images/mod_bag.cpt"));
+
+    auto go_mask= new GameObject("mask_mod_bag");
+    go_mask->set_layer(0x02);
+    go_mask->set_parent(go_ui);
+
+    auto transform_ui_mask = dynamic_cast<Transform*>(go_mask->add_component("Transform"));
+    auto ui_mask_mod_bag = dynamic_cast<UIMask*>(go_mask->add_component("UIMask"));
+    ui_mask_mod_bag->set_texture(Texture2D::LoadFromFile("images/mod_bag_mask.cpt"));
+
 }
 
 void LoginScene::Update()
@@ -132,6 +144,13 @@ void LoginScene::Update()
 
     m_camera_1->SetView(glm::vec3(0,0,0), glm::vec3(0.f, 1.f, 0.f));
     m_camera_1->SetProjection(60.f, Screen::aspect_ratio(), 1.f, 1000.f);
+
+    if(Input::GetKeyUp(KEY_CODE_A))
+    {
+        auto go_ui_mask = GameObject::Find("mask_mod_bag");
+        go_ui_mask->set_active(!go_ui_mask->active());
+    }
+
 
     if(Input::GetKeyDown(KEY_CODE_R))
     {

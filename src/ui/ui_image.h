@@ -19,8 +19,11 @@ public:
     void set_texture(Texture2D* texture) { m_texture = texture; }
 
 public:
-    void Awake() override;
     void Update() override;
+
+    void OnPreRender() override;
+
+    void OnPostRender() override;
 private:
     Texture2D* m_texture = nullptr;
 
