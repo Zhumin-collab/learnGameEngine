@@ -24,6 +24,9 @@
 #include "renderer/font.h"
 #include "ui/ui_image.h"
 #include "ui/ui_mask.h"
+#include "ui/ui_text.h"
+
+
 
 RTTR_REGISTRATION
 {
@@ -136,6 +139,19 @@ void LoginScene::CreateUI()
     auto transform_ui_mask = dynamic_cast<Transform*>(go_mask->add_component("Transform"));
     auto ui_mask_mod_bag = dynamic_cast<UIMask*>(go_mask->add_component("UIMask"));
     ui_mask_mod_bag->set_texture(Texture2D::LoadFromFile("images/mod_bag_mask.cpt"));
+
+    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 24);
+    auto go_text = new GameObject("text");
+    go_text->set_layer(0x02);
+    
+    auto transform_text = dynamic_cast<Transform*>(go_text->add_component("Transform"));
+
+    transform_text->set_position({0.f,-200.f,0.f});
+
+    auto ui_text = dynamic_cast<UIText*>(go_text->add_component("UIText"));
+    ui_text->set_font(font);
+    ui_text->set_text("Captain");
+    ui_text->set_color(glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 }
 
