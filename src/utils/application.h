@@ -11,7 +11,7 @@ public:
     static const std::string& data_path() {return m_data_path;};
     static void set_data_path(const std::string& data_path) {m_data_path = data_path;};
 
-    static void InitOpengl();
+    static void Init();
 
     static void Run();
 

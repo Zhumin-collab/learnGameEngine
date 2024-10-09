@@ -36,7 +36,7 @@ void Texture2D::UpdateSubImage(int x, int y, int width, int height, unsigned int
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);__CHECK_GL_ERROR__
     glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, client_format, data_type, data);__CHECK_GL_ERROR__
 }
-Texture2D* Texture2D::LoadFromFile(std::string& image_file_path)
+Texture2D* Texture2D::LoadFromFile(std::string image_file_path)
 {
     if(image_file_path.empty())
     {

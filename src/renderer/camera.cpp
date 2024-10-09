@@ -86,3 +86,8 @@ void Camera::Sort()
         return a->depth() < b->depth();
     });
 }
+
+void Camera::SetOrthographic(float left, float right, float bottom, float top, float near, float far)
+{
+    m_projection_mat4 = glm::ortho(left, right, bottom, top, near, far);
+}

@@ -44,6 +44,9 @@ public:
     static Camera* current_camera() { return m_current_camera; }
 
     static void Sort();
+
+    void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
+
 private:
     glm::mat4 m_view_mat4;
     glm::mat4 m_projection_mat4;

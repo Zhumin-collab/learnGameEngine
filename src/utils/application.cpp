@@ -11,7 +11,7 @@
 #include "application.h"
 #include "screen.h"
 #include "utils/debug.h"
-
+#include "render_device/render_device_opengl.h"
 
 
 std::string Application::m_data_path;
@@ -44,9 +44,11 @@ void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     Input::set_mouse_scroll(yoffset);
 }
 
-void Application::InitOpengl()
+void Application::Init()
 {
     std::cout<<"init_opengl"<<std::endl;
+
+    RenderDevice::Init(new RenderDeviceOpenGL());
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -83,9 +85,10 @@ void Application::Update()
     UpdateScreenSize();
 
     GameObject::Foreach([](GameObject* game_object){
-        game_object->ForeachComponent([](Component* component){
-            component->Update();
-        });
+        if(game_object->active())
+            game_object->ForeachComponent([](Component* component){
+                component->Update();
+            });
     });
 
     Input::Update();
@@ -96,6 +99,11 @@ void Application::Render()
 {
     Camera::Foreach([&](){
         GameObject::Foreach([](GameObject* game_object){
+            if (game_object->active() == false)
+            {
+                return;
+            }
+            
             auto component = game_object->get_component("MeshRender");
             if(component == nullptr)
             {

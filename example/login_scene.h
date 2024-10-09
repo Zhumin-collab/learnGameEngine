@@ -19,6 +19,7 @@ private:
     
     void CreateFont();
 
+    void CreateUI();
 private:
     Transform* m_transform;
 

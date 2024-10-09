@@ -8,7 +8,7 @@
 int main(void)
 {
     Application::set_data_path("E:/learnGameEngine/data/");
-    Application::InitOpengl();
+    Application::Init();
 
     GameObject* go = new GameObject("LoginScene");
     go->add_component("Transform");

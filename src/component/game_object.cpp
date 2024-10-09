@@ -5,19 +5,22 @@
 
 #include "game_object.h"
 #include "component.h"
+#include "utils/debug.h"
 
 #include <rttr/registration>
+#include <assert.h>
 
-std::list<GameObject*> GameObject::m_game_objects;
+
+Tree GameObject::m_game_objects;
 
 GameObject::GameObject():m_layer(0x01) {
 
 }
 
-GameObject::GameObject(const std::string& name):m_layer(0x01){
+GameObject::GameObject(const std::string& name): Tree::Node(), m_layer(0x01){
     set_name(name);
 
-    m_game_objects.push_back(this);
+    m_game_objects.root_node()->add_child(this);
 }   
 
 GameObject::~GameObject() {
@@ -60,16 +63,42 @@ Component* GameObject::get_component(std::string component_type_name){
 void GameObject::ForeachComponent(std::function<void(Component* component)> func){
     for(auto it:m_components)
     {
-        for(auto component:it.second)
+        for(auto &iter:it.second)
         {
+            Component* component = iter;
             func(component);
         }
     }
 }
 
-void GameObject::Foreach(std::function<void(GameObject* game_object)> func){
-    for(auto game_object:m_game_objects)
-    {
-        func(game_object);
+bool GameObject::set_parent(GameObject* parent){
+    if(parent == nullptr){
+        return false;
     }
+    parent->add_child(this);
+    return true;
+}
+
+void GameObject::Foreach(std::function<void(GameObject* game_object)> func){
+    m_game_objects.Post(m_game_objects.root_node(),[&func](Tree::Node* node){
+        auto n = node;
+        GameObject* game_object = dynamic_cast<GameObject*>(n);
+        func(game_object);
+    });
+}
+
+GameObject* GameObject::Find(std::string name)
+{
+    GameObject* game_object_find = nullptr;
+
+    m_game_objects.Find(m_game_objects.root_node(),[&name](Tree::Node* node){
+        GameObject* game_object = dynamic_cast<GameObject*>(node);
+        if(game_object->name() == name)
+        {
+            return true;
+        }
+        return false;
+    },reinterpret_cast<Tree::Node**>(&game_object_find));
+
+    return game_object_find;
 }
