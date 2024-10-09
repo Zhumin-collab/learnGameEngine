@@ -153,6 +153,8 @@ void LoginScene::CreateUI()
     ui_text->set_text("Captain");
     ui_text->set_color(glm::vec4(1.f, 0.f, 0.f, 1.f));
 
+    
+
 }
 
 void LoginScene::Update()
