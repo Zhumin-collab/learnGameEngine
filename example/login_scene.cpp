@@ -25,7 +25,7 @@
 #include "ui/ui_image.h"
 #include "ui/ui_mask.h"
 #include "ui/ui_text.h"
-
+#include "ui/ui_button.h"
 
 
 RTTR_REGISTRATION
@@ -150,11 +150,31 @@ void LoginScene::CreateUI()
 
     auto ui_text = dynamic_cast<UIText*>(go_text->add_component("UIText"));
     ui_text->set_font(font);
-    ui_text->set_text("Captain");
+    ui_text->set_text("a");
     ui_text->set_color(glm::vec4(1.f, 0.f, 0.f, 1.f));
 
-    
+    auto go_button_image_normal = new GameObject("btn_power");
+    go_button_image_normal->set_layer(0x02);
+    go_button_image_normal->add_component("Transform");
+    auto ui_image_button_image_normal = dynamic_cast<UIImage*>(go_button_image_normal->add_component("UIImage"));
+    ui_image_button_image_normal->set_texture(Texture2D::LoadFromFile("images/btn_power.cpt"));
 
+    auto go_button_image_press = new GameObject("btn_power_press");
+    go_button_image_press->set_layer(0x02);
+    go_button_image_press->add_component("Transform");
+    auto ui_image_button_image_press = dynamic_cast<UIImage*>(go_button_image_press->add_component("UIImage"));
+    ui_image_button_image_press->set_texture(Texture2D::LoadFromFile("images/btn_power_press.cpt"));
+
+    auto go_button = new GameObject("button");
+    go_button->set_layer(0x02);
+    auto transform_ui_button = dynamic_cast<Transform*>(go_button->add_component("Transform"));
+    transform_ui_button->set_position({100.f, -200.f, 0.f});
+    auto ui_button = dynamic_cast<UIButton*>(go_button->add_component("UIButton"));
+    ui_button->set_image_normal(ui_image_button_image_normal);
+    ui_button->set_image_press(ui_image_button_image_press);
+    ui_button->set_click_callback([=](){
+        go_mask->set_active(!go_mask->active());
+    });
 }
 
 void LoginScene::Update()
@@ -162,13 +182,6 @@ void LoginScene::Update()
 
     m_camera_1->SetView(glm::vec3(0,0,0), glm::vec3(0.f, 1.f, 0.f));
     m_camera_1->SetProjection(60.f, Screen::aspect_ratio(), 1.f, 1000.f);
-
-    if(Input::GetKeyUp(KEY_CODE_A))
-    {
-        auto go_ui_mask = GameObject::Find("mask_mod_bag");
-        go_ui_mask->set_active(!go_ui_mask->active());
-    }
-
 
     if(Input::GetKeyDown(KEY_CODE_R))
     {

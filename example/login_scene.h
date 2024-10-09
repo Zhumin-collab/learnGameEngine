@@ -31,7 +31,7 @@ private:
     Camera* m_camera_2;
 
 
-    vec2_ushort m_last_mouse_position;
+    glm::vec2 m_last_mouse_position;
 
 };
 
