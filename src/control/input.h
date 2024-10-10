@@ -30,7 +30,7 @@ public:
 
     static bool GetMouseButtonUp(unsigned short mouse_button_index);
 
-    static vec2_ushort mousePosition(){return m_mouse_position;};
+    static glm::vec2 mousePosition(){return m_mouse_position;};
 
     static void set_mousePosition(unsigned short x, unsigned short y) {m_mouse_position.x = x; m_mouse_position.y = y;};
 
@@ -40,7 +40,7 @@ public:
 
 private:
     static std::unordered_map<unsigned char, unsigned char> m_keys_map;
-    static vec2_ushort m_mouse_position;
+    static glm::vec2 m_mouse_position;
     static short m_mouse_scroll;
 };
 

@@ -20,7 +20,7 @@ RTTR_REGISTRATION
         .constructor<>()(rttr::policy::ctor::as_raw_ptr);
 }
 
-UIImage::UIImage()
+UIImage::UIImage():m_texture(nullptr),m_width(0),m_height(0),Component()
 {
 }
 
