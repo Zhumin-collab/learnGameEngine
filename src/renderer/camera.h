@@ -25,10 +25,31 @@ public:
     glm::mat4& view_mat4() { return m_view_mat4; }
     glm::mat4& projection_mat4() { return m_projection_mat4; }
 
+    /// @brief 设置正交相机矩阵
+    /// @param left 
+    /// @param right 
+    /// @param bottom 
+    /// @param top 
+    /// @param z_near
+    /// @param z_far
+    void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
+
+    /// @brief 设置清屏颜色
+    /// @param r 
+    /// @param g 
+    /// @param b 
+    /// @param a 
     void set_clear_color(float r, float g, float b, float a) { m_clear_color = glm::vec4(r,g,b,a); }
 
+    /// @brief 设置刷帧内容种类
+    /// @param clear_flag 
     void set_clear_flag(unsigned int clear_flag) { m_clear_flag = clear_flag; }
+    
+    /// @brief 清屏
+    void clear();
 
+    /// @brief 获得深度
+    /// @return 
     unsigned char depth() { return m_depth; }
 
     void set_depth(unsigned char depth);
@@ -37,17 +58,15 @@ public:
     
     void set_chulling_mask(unsigned char chulling_mask);
 
-    void clear();
 
-    static void Foreach(std::function<void()> func);
+    enum CameraUseFor{
+        UI,
+        SCENE
+    };
 
-    static Camera* current_camera() { return m_current_camera; }
+    CameraUseFor camera_use_for(){ return m_camera_use_for; }
 
-    static void Sort();
-
-    void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
-
-private:
+protected:
     glm::mat4 m_view_mat4;
     glm::mat4 m_projection_mat4;
     glm::vec4 m_clear_color;
@@ -55,10 +74,23 @@ private:
 
     unsigned char m_depth;
 
+    unsigned char m_chulling_mask;
+
+    CameraUseFor m_camera_use_for = CameraUseFor::SCENE;
+
+public:
+    static void Sort();
+
+    static void Foreach(std::function<void()> func);
+
+    static Camera* current_camera(){return m_current_camera;}
+
+private:
+
+
     static std::vector<Camera*> m_cameras;
     static Camera* m_current_camera;
 
-    unsigned char m_chulling_mask;
 
 };
 
