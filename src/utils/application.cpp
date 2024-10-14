@@ -12,7 +12,7 @@
 #include "screen.h"
 #include "utils/debug.h"
 #include "render_device/render_device_opengl.h"
-
+#include "audio/audio.h"
 
 std::string Application::m_data_path;
 GLFWwindow* Application::m_window;
@@ -46,8 +46,8 @@ void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void Application::Init()
 {
-    std::cout<<"init_opengl"<<std::endl;
-
+    Debug::Init();
+    DEBUG_LOG_INFO("game start!");
     RenderDevice::Init(new RenderDeviceOpenGL());
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -78,6 +78,8 @@ void Application::Init()
     glfwSetScrollCallback(m_window, mouse_scroll_callback);
     glfwSetCursorPosCallback(m_window, mouse_move_callback);
 
+    Audio::Init();
+
 }
 
 void Application::Update()
@@ -92,6 +94,8 @@ void Application::Update()
     });
 
     Input::Update();
+
+    Audio::Update();
 }
 
 
