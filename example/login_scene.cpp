@@ -47,6 +47,7 @@ void LoginScene::Awake()
 
     CreateFishSoupPot();
 
+    CreateQuad();
     CreateSounds();
 
 }
@@ -54,11 +55,12 @@ void LoginScene::Awake()
 void LoginScene::CreateSounds()
 {
     FMOD_RESULT result;
+    std::string name = Application::data_path() + "audio/war_bgm.wav";
     result = Audio::CreateSound((Application::data_path() + "audio/war_bgm.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_1);
 
-    result = Audio::CreateSound((Application::data_path() + "audio/knife_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_2);
+    result = Audio::CreateSound((Application::data_path() + "audio/knife_attack.wav").c_str(), FMOD_2D, nullptr, &m_sound_2);
 
-    result = Audio::CreateSound((Application::data_path() + "audio/magic_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_3);
+    result = Audio::CreateSound((Application::data_path() + "audio/magic_attack.wav").c_str(), FMOD_2D, nullptr, &m_sound_3);
 }
 
 void LoginScene::CreateFishSoupPot()

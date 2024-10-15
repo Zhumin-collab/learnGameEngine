@@ -11,7 +11,7 @@ FMOD_SYSTEM* Audio::m_fmod_system;
 void Audio::Init()
 {
     FMOD_RESULT result;
-    result = FMOD_System_Create(&m_fmod_system,0);
+    result = FMOD_System_Create(&m_fmod_system,FMOD_VERSION);
 
     DEBUG_LOG_INFO("FMOD_System_Create result: {}", static_cast<int>(result));
 
