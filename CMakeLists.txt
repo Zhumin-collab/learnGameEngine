@@ -14,7 +14,7 @@ set(XML_DIR "depends/rapidxml/include")
 set(RTTR "depends/rttr/include")
 set(FREETYPE "depends/freetype/include/freetype2")
 set(SPDLOG "depends/spdlog/include")
-
+set(FMOD "depends")
 include_directories(${GLFW_DIR} 
                     ${GLAD_DIR} 
                     ${GLM_DIR} 
@@ -24,11 +24,12 @@ include_directories(${GLFW_DIR}
                     ${RTTR}
                     ${FREETYPE}
                     ${SPDLOG}
+                    ${FMOD}
                     )
 
 add_library(glad STATIC depends/glad/src/glad_gl.c)
 
-link_directories("depends/glfw/libs" "depends/rttr/lib" "depends/freetype/lib" "depends/spdlog/lib")
+link_directories("depends/glfw/libs" "depends/rttr/lib" "depends/freetype/lib" "depends/spdlog/lib" "depends/fmod/api/core/lib/x64/")
 
 file(GLOB_RECURSE SOURCES "src/**/*.cpp")
 
@@ -40,4 +41,4 @@ add_executable(LearnGameEngine
 
 target_include_directories(LearnGameEngine PRIVATE src)
 
-target_link_libraries(LearnGameEngine PRIVATE glfw3 glad rttr_core_d freetyped spdlogd)
+target_link_libraries(LearnGameEngine PRIVATE glfw3 glad rttr_core_d freetyped spdlogd fmod_vc fmodL_vc)

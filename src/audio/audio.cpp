@@ -13,11 +13,11 @@ void Audio::Init()
     FMOD_RESULT result;
     result = FMOD_System_Create(&m_fmod_system,0);
 
-    DEBUG_LOG_INFO("FMOD_System_Create result: {}", result);
+    DEBUG_LOG_INFO("FMOD_System_Create result: {}", static_cast<int>(result));
 
     unsigned int version;
     result = FMOD_System_GetVersion(m_fmod_system, &version);
-    DEBUG_LOG_INFO("FMOD_System_GetVersion result: {}", result);
+    DEBUG_LOG_INFO("FMOD_System_GetVersion result: {}", static_cast<int>(result));
 
     if(version < FMOD_VERSION)
     {
@@ -26,7 +26,7 @@ void Audio::Init()
 
     result = FMOD_System_Init(m_fmod_system, 32, FMOD_INIT_NORMAL, 0);
 
-    DEBUG_LOG_INFO("FMOD_System_Init result: {}", result);
+    DEBUG_LOG_INFO("FMOD_System_Init result: {}", static_cast<int>(result));
 
 
 }

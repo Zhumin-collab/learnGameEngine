@@ -26,7 +26,7 @@
 #include "ui/ui_mask.h"
 #include "ui/ui_text.h"
 #include "ui/ui_button.h"
-
+#include "audio/audio.h"
 
 RTTR_REGISTRATION
 {
@@ -46,9 +46,19 @@ void LoginScene::Awake()
     m_last_mouse_position = Input::mousePosition();
 
     CreateFishSoupPot();
-    CreateFont();
-    CreateUI();
 
+    CreateSounds();
+
+}
+
+void LoginScene::CreateSounds()
+{
+    FMOD_RESULT result;
+    result = Audio::CreateSound((Application::data_path() + "audio/war_bgm.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_1);
+
+    result = Audio::CreateSound((Application::data_path() + "audio/knife_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_2);
+
+    result = Audio::CreateSound((Application::data_path() + "audio/magic_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_3);
 }
 
 void LoginScene::CreateFishSoupPot()
@@ -67,115 +77,37 @@ void LoginScene::CreateFishSoupPot()
     mesh_render->SetMaterial(material);
 }
 
-void LoginScene::CreateFont()
+void LoginScene::CreateQuad()
 {
-    std::string str = "Captain";
-    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 100);
-    auto character_vec = font->LoadStr(str);
+    std::vector<MeshFilter::Vertex> vertex_vector = {
+        {{-1.f,-1.f,1.f}, {1.f,1.f,1.f,1.f}, {0.f,0.f}},
+        {{1.f,-1.f,1.f}, {1.f,1.f,1.f,1.f}, {1.f,0.f}},
+        {{1.f,1.f,1.f}, {1.f,1.f,1.f,1.f}, {1.f,1.f}},
+        {{-1.f,1.f,1.f}, {1.f,1.f,1.f,1.f}, {0.f,1.f}}
+    };
 
-    int offset_x = 0;
-    for(auto character:character_vec)
-    {
-        offset_x+=2;
-        std::vector<MeshFilter::Vertex> vertices = {
-            {{-1.f+offset_x, 2.f, 1.f}, {1.f, 0.f, 0.f, 1.f}, {character->left_top_x, character->right_bottom_y}},
-            {{1.f+offset_x,  2.f, 1.f}, {1.f, 0.f, 0.f, 1.f}, {character->right_bottom_x, character->right_bottom_y}},
-            {{1.f+offset_x,  4.f, 1.f}, {0.f, 1.f, 0.f, 1.f}, {character->right_bottom_x, character->left_top_y}},
-            {{-1.f+offset_x, 4.f, 1.f}, {0.f, 1.f, 0.f, 1.f}, {character->left_top_x, character->left_top_y}}
-        };
+    std::vector<unsigned short> vertex_index_vector = {
+        0,1,2,
+        0,2,3
+    };
 
-        std::vector<unsigned short> indexs = {
-            0, 1, 2,
-            0, 2, 3
-        };
+    auto go = new GameObject("quad_draw_font");
+    go->set_layer(0x01);
 
-        auto go = new GameObject("quad_draw_font");
-        go->set_layer(0x01);
+    auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
+    transform->set_position(glm::vec3(2.f,0.f,5.f));
 
-        auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
-        transform->set_position(glm::vec3(-8.f, 0.f, 0.f));
+    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
+    mesh_filter->CreateMesh(vertex_vector, vertex_index_vector);
 
-        auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
-        mesh_filter->CreateMesh(vertices, indexs);
+    m_material = new Material();
+    m_material->Parse("material/fmod_play_2d_sound_tips.mat");
 
-        m_material = new Material();
-        m_material->Parse("material/quad_draw_font.mat");
-
-        auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
-        mesh_render->SetMaterial(m_material);
-
-
-
-        m_material->SetTexture("u_diffuse_texture",font->font_texture());
-    }
+    auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
+    mesh_render->SetMaterial(m_material);
 }
 
-void LoginScene::CreateUI()
-{
-    auto go_camera_ui = new GameObject("ui_camera");
-    auto transform_camera_ui = dynamic_cast<Transform*>(go_camera_ui->add_component("Transform"));
-    transform_camera_ui->set_position(glm::vec3(0.f, 0.f, 10.f));
 
-    auto camera_ui = dynamic_cast<Camera*>(go_camera_ui->add_component("Camera"));
-    camera_ui->set_depth(1);
-    camera_ui->set_chulling_mask(0x02);
-    
-    camera_ui->set_clear_flag(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-
-    camera_ui->SetView(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-    camera_ui->SetOrthographic(-Screen::width()/2.,Screen::width()/2.,-Screen::height()/2.,Screen::height()/2.,-100.f,100.f);
-
-    auto go_ui = new GameObject("image_mod_bag");
-    go_ui->set_layer(0x02);
-    go_ui->add_component("Transform");
-
-    auto ui_image = dynamic_cast<UIImage*>(go_ui->add_component("UIImage"));
-    ui_image->set_texture(Texture2D::LoadFromFile("images/mod_bag.cpt"));
-
-    auto go_mask= new GameObject("mask_mod_bag");
-    go_mask->set_layer(0x02);
-    go_mask->set_parent(go_ui);
-
-    auto transform_ui_mask = dynamic_cast<Transform*>(go_mask->add_component("Transform"));
-    auto ui_mask_mod_bag = dynamic_cast<UIMask*>(go_mask->add_component("UIMask"));
-    ui_mask_mod_bag->set_texture(Texture2D::LoadFromFile("images/mod_bag_mask.cpt"));
-
-    Font* font = Font::LoadFromFile("font/hkyuan.ttf", 24);
-    auto go_text = new GameObject("text");
-    go_text->set_layer(0x02);
-    
-    auto transform_text = dynamic_cast<Transform*>(go_text->add_component("Transform"));
-
-    transform_text->set_position({0.f,-200.f,0.f});
-
-    auto ui_text = dynamic_cast<UIText*>(go_text->add_component("UIText"));
-    ui_text->set_font(font);
-    ui_text->set_text("a");
-    ui_text->set_color(glm::vec4(1.f, 0.f, 0.f, 1.f));
-
-    auto go_button_image_normal = new GameObject("btn_power");
-    go_button_image_normal->set_layer(0x02);
-    go_button_image_normal->add_component("Transform");
-    auto ui_image_button_image_normal = dynamic_cast<UIImage*>(go_button_image_normal->add_component("UIImage"));
-    ui_image_button_image_normal->set_texture(Texture2D::LoadFromFile("images/btn_power.cpt"));
-
-    auto go_button_image_press = new GameObject("btn_power_press");
-    go_button_image_press->set_layer(0x02);
-    go_button_image_press->add_component("Transform");
-    auto ui_image_button_image_press = dynamic_cast<UIImage*>(go_button_image_press->add_component("UIImage"));
-    ui_image_button_image_press->set_texture(Texture2D::LoadFromFile("images/btn_power_press.cpt"));
-
-    auto go_button = new GameObject("button");
-    go_button->set_layer(0x02);
-    auto transform_ui_button = dynamic_cast<Transform*>(go_button->add_component("Transform"));
-    transform_ui_button->set_position({100.f, -200.f, 0.f});
-    auto ui_button = dynamic_cast<UIButton*>(go_button->add_component("UIButton"));
-    ui_button->set_image_normal(ui_image_button_image_normal);
-    ui_button->set_image_press(ui_image_button_image_press);
-    ui_button->set_click_callback([=](){
-        go_mask->set_active(!go_mask->active());
-    });
-}
 
 void LoginScene::Update()
 {
@@ -208,4 +140,33 @@ void LoginScene::Update()
 
     m_transform_camera1->set_position(m_transform_camera1->position() * ((10 - Input::mouse_scroll()) / 10.f));
 
+    if(Input::GetKeyUp(KEY_CODE_1)){
+        PlayPauseSound(m_sound_1, &m_channel_1);
+    }else if(Input::GetKeyUp(KEY_CODE_2)){
+        PlayPauseSound(m_sound_2, &m_channel_2);
+    }else if(Input::GetKeyUp(KEY_CODE_3)){
+        PlayPauseSound(m_sound_3, &m_channel_3);
+    }
+}
+
+void LoginScene::PlayPauseSound(FMOD_SOUND* sound, FMOD_CHANNEL** channel)
+{
+    FMOD_RESULT result;
+    FMOD_BOOL paused = false;
+
+    result = FMOD_Channel_GetPaused(*channel, &paused);
+
+    switch(result){
+        case FMOD_OK:
+            result = FMOD_Channel_SetPaused(*channel, !paused);
+            break;
+        case FMOD_ERR_INVALID_PARAM:
+        case FMOD_ERR_INVALID_HANDLE:
+        case FMOD_ERR_CHANNEL_STOLEN:
+            result = Audio::PlaySound(sound, nullptr, false, channel);
+            break;
+        default:
+            break;
+
+    }
 }
