@@ -13,7 +13,7 @@
 #include "utils/debug.h"
 #include "render_device/render_device_opengl.h"
 #include "audio/audio.h"
-
+#include "utils/time.h"
 std::string Application::m_data_path;
 GLFWwindow* Application::m_window;
 
@@ -48,6 +48,8 @@ void Application::Init()
 {
     Debug::Init();
     DEBUG_LOG_INFO("game start!");
+    Time::Init();
+
     RenderDevice::Init(new RenderDeviceOpenGL());
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -84,6 +86,8 @@ void Application::Init()
 
 void Application::Update()
 {
+    Time::Update();
+
     UpdateScreenSize();
 
     GameObject::Foreach([](GameObject* game_object){

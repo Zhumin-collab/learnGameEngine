@@ -19,9 +19,9 @@ private:
     
     void CreateQuad();
 
-    void CreateSounds();
+    void CreateAudioSource();
 
-    void PlayPauseSound(FMOD_SOUND* sound,FMOD_CHANNEL** channel);
+    void CreateAudioListener();
 private:
     Transform* m_transform;
 
@@ -37,6 +37,8 @@ private:
 
     FMOD_SOUND     *m_sound_1= nullptr, *m_sound_2= nullptr, *m_sound_3= nullptr;
     FMOD_CHANNEL   *m_channel_1= nullptr, *m_channel_2= nullptr, *m_channel_3= nullptr;
+
+    Transform* m_transform_player = nullptr;
 
 };
 
