@@ -43,5 +43,5 @@ void AudioListener::Update()
     FMOD_VECTOR forward = {0.f, 0.f, 1.f};
     FMOD_VECTOR up = {0.f, 1.f, 0.f};
 
-    FMOD_RESULT result = Audio::Set3DListenerAttributes(m_listener_id, &audio_listener_pos, &vel, &forward, &up);
+    FMOD_RESULT result = AudioCore::Set3DListenerAttributes(m_listener_id, &audio_listener_pos, &vel, &forward, &up);
 }

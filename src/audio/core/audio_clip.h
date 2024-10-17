@@ -5,7 +5,7 @@
 #ifndef AUDIO_CLIP_H
 #define AUDIO_CLIP_H
 
-#include "audio.h"
+#include "audio_core.h"
 #include <string>
 
 class AudioClip{

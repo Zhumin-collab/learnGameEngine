@@ -66,7 +66,7 @@ void AudioSource::Play()
         case FMOD_ERR_INVALID_PARAM:
         case FMOD_ERR_INVALID_HANDLE:
         case FMOD_ERR_CHANNEL_STOLEN:
-            result = Audio::PlaySound(m_audio_clip->fmod_sound(), nullptr, false, &m_fmod_channel);
+            result = AudioCore::PlaySound(m_audio_clip->fmod_sound(), nullptr, false, &m_fmod_channel);
             break;
         default:
             break;

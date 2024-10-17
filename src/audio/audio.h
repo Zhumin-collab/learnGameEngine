@@ -9,35 +9,9 @@
 
 class Audio{
 public:
-    /// @brief 初始化音频系统
     static void Init();
 
-    /// @brief 创建音效
-    /// @param name 
-    /// @param mode 
-    /// @param exinfo 
-    /// @param sound 
-    /// @return 
-    static FMOD_RESULT CreateSound(const char* name, FMOD_MODE mode, FMOD_CREATESOUNDEXINFO* exinfo, FMOD_SOUND** sound);
-
-    /// @brief 播放音效
-    /// @param sound 
-    /// @param channelgroup 
-    /// @param paused 
-    /// @param channel 
-    /// @return 
-    static FMOD_RESULT PlaySound(FMOD_SOUND* sound, FMOD_CHANNELGROUP* channelgroup, bool paused, FMOD_CHANNEL** channel);
-
-    static FMOD_RESULT Update();
-
-    static FMOD_RESULT Set3DListenerAttributes(int listener, const FMOD_VECTOR* pos, const FMOD_VECTOR *vel, const FMOD_VECTOR *forward, const FMOD_VECTOR *up);
-
-private:
-    static FMOD_SYSTEM* m_fmod_system;
-
-
-
-private:
+    static void Update();
 
 };
 

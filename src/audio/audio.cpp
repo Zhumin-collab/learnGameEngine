@@ -3,47 +3,21 @@
 //
 
 #include "audio.h"
-#include "utils/debug.h"
 
+#ifdef USE_FMOD_STUDIO
+#include "studio/audio_studio.h"
+#define AudioSolution AudioStudio
+#else
+#include "core/audio_core.h"
+#define AudioSolution AudioCore
+#endif
 
-FMOD_SYSTEM* Audio::m_fmod_system;
 
 void Audio::Init()
 {
-    FMOD_RESULT result;
-    result = FMOD_System_Create(&m_fmod_system,FMOD_VERSION);
-
-    DEBUG_LOG_INFO("FMOD_System_Create result: {}", static_cast<int>(result));
-
-    unsigned int version;
-    result = FMOD_System_GetVersion(m_fmod_system, &version);
-    DEBUG_LOG_INFO("FMOD_System_GetVersion result: {}", static_cast<int>(result));
-
-    if(version < FMOD_VERSION)
-    {
-        DEBUG_LOG_ERROR("FMOD lib version is too old");
-    }
-
-    result = FMOD_System_Init(m_fmod_system, 32, FMOD_INIT_NORMAL, 0);
-
-    DEBUG_LOG_INFO("FMOD_System_Init result: {}", static_cast<int>(result));
-
-
+    AudioSolution::Init();
 }
 
-FMOD_RESULT Audio::Update(){
-    return FMOD_System_Update(m_fmod_system);
-}
-
-FMOD_RESULT Audio::CreateSound(const char* name, FMOD_MODE mode, FMOD_CREATESOUNDEXINFO* exinfo, FMOD_SOUND** sound){
-    DEBUG_LOG_INFO("Audio::CreateSound name:{}",name);
-    return FMOD_System_CreateSound(m_fmod_system, name, mode, exinfo, sound);
-}
-
-FMOD_RESULT Audio::PlaySound(FMOD_SOUND* sound, FMOD_CHANNELGROUP* channelgroup, bool paused, FMOD_CHANNEL** channel){
-    return FMOD_System_PlaySound(m_fmod_system, sound, channelgroup, paused, channel);
-}
-
-FMOD_RESULT Audio::Set3DListenerAttributes(int listener, const FMOD_VECTOR* pos, const FMOD_VECTOR *vel, const FMOD_VECTOR *forward, const FMOD_VECTOR *up){
-    return FMOD_System_Set3DListenerAttributes(m_fmod_system, listener, pos, vel, forward, up);
+void Audio::Update(){
+    AudioSolution::Update();
 }
