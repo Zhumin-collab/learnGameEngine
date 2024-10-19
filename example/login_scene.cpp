@@ -26,7 +26,9 @@
 #include "ui/ui_mask.h"
 #include "ui/ui_text.h"
 #include "ui/ui_button.h"
-#include "audio/audio.h"
+#include "audio/audio_source.h"
+#include "audio/audio_listener.h"
+#include "utils/time.h"
 
 RTTR_REGISTRATION
 {
@@ -45,20 +47,13 @@ void LoginScene::Awake()
     m_camera_1->set_depth(0);
     m_last_mouse_position = Input::mousePosition();
 
-    CreateFishSoupPot();
+    // CreateFishSoupPot();
 
-    CreateSounds();
+    // CreateQuad();
 
-}
+    CreateAudioSource();
+    CreateAudioListener();
 
-void LoginScene::CreateSounds()
-{
-    FMOD_RESULT result;
-    result = Audio::CreateSound((Application::data_path() + "audio/war_bgm.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_1);
-
-    result = Audio::CreateSound((Application::data_path() + "audio/knife_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_2);
-
-    result = Audio::CreateSound((Application::data_path() + "audio/magic_attack.wav").c_str(), FMOD_2D|FMOD_LOOP_NORMAL, nullptr, &m_sound_3);
 }
 
 void LoginScene::CreateFishSoupPot()
@@ -107,6 +102,41 @@ void LoginScene::CreateQuad()
     mesh_render->SetMaterial(m_material);
 }
 
+void LoginScene::CreateAudioSource()
+{
+    GameObject* go = new GameObject("audio_source_bgm");
+    auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
+    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
+    mesh_filter->loadMesh("model/sphere.mesh");
+
+    auto mesh_renderer = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
+    auto material = new Material();
+    material->Parse("material/sphere_audio_source_3d_music.mat");
+    mesh_renderer->SetMaterial(material);
+
+    auto audio_source = dynamic_cast<AudioSource*>(go->add_component("AudioSource"));
+    audio_source->set_audio_clip(AudioClip::LoadFromFile("audio/war_bgm.wav"));
+    audio_source->Play();
+    audio_source->Set3DMode(true);
+    audio_source->SetLoop(true);
+}
+
+void LoginScene::CreateAudioListener()
+{
+    auto go = new GameObject("Player");
+    m_transform_player = dynamic_cast<Transform*>(go->add_component("Transform"));
+    m_transform_player->set_position(glm::vec3(2.f, 0.f, 0.f));
+
+    auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
+    mesh_filter->loadMesh("model/sphere.mesh");
+
+    auto mesh_render = dynamic_cast<MeshRender*>(go->add_component("MeshRender"));
+    auto material = new Material();
+    material->Parse("material/sphere_audio_source_3d_listener.mat");
+    mesh_render->SetMaterial(material);
+
+    go->add_component("AudioListener");
+}
 
 
 void LoginScene::Update()
@@ -115,14 +145,6 @@ void LoginScene::Update()
     m_camera_1->SetView(glm::vec3(0,0,0), glm::vec3(0.f, 1.f, 0.f));
     m_camera_1->SetProjection(60.f, Screen::aspect_ratio(), 1.f, 1000.f);
 
-    if(Input::GetKeyDown(KEY_CODE_R))
-    {
-        static float rotate_eulerAngle = 0.f;
-        rotate_eulerAngle += 0.1f;
-        glm::vec3 rotation = m_transform->rotation();
-        rotation.y = rotate_eulerAngle;
-        m_transform->set_rotation(rotation);
-    }
 
     if(Input::GetKeyDown(KEY_CODE_LEFT_ALT)&& Input::GetMouseButtonDown(MOUSE_BUTTON_LEFT))
     {
@@ -140,33 +162,10 @@ void LoginScene::Update()
 
     m_transform_camera1->set_position(m_transform_camera1->position() * ((10 - Input::mouse_scroll()) / 10.f));
 
-    if(Input::GetKeyUp(KEY_CODE_1)){
-        PlayPauseSound(m_sound_1, &m_channel_1);
-    }else if(Input::GetKeyUp(KEY_CODE_2)){
-        PlayPauseSound(m_sound_2, &m_channel_2);
-    }else if(Input::GetKeyUp(KEY_CODE_3)){
-        PlayPauseSound(m_sound_3, &m_channel_3);
-    }
+    std::cout << Time::deltaTime() << std::endl;
+    glm::mat4 rotate_mat4 = glm::rotate(glm::mat4(1.f), glm::radians(Time::deltaTime()*60), glm::vec3(0.f, 0.f, 1.f));
+    glm::vec4 old_pos = glm::vec4(m_transform_player->position(), 1.f);
+    glm::vec4 new_pos = rotate_mat4 * old_pos;
+    m_transform_player->set_position(glm::vec3(new_pos));
 }
 
-void LoginScene::PlayPauseSound(FMOD_SOUND* sound, FMOD_CHANNEL** channel)
-{
-    FMOD_RESULT result;
-    FMOD_BOOL paused = false;
-
-    result = FMOD_Channel_GetPaused(*channel, &paused);
-
-    switch(result){
-        case FMOD_OK:
-            result = FMOD_Channel_SetPaused(*channel, !paused);
-            break;
-        case FMOD_ERR_INVALID_PARAM:
-        case FMOD_ERR_INVALID_HANDLE:
-        case FMOD_ERR_CHANNEL_STOLEN:
-            result = Audio::PlaySound(sound, nullptr, false, channel);
-            break;
-        default:
-            break;
-
-    }
-}
