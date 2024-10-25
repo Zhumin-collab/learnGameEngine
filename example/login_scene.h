@@ -4,9 +4,11 @@
 #include "component/component.h"
 #include "control/input.h"
 #include "audio/audio.h"
+
 class Transform;
 class Camera;
 class Material;
+class AudioStudioEvent;
 class LoginScene : public Component
 {
 public:
@@ -39,6 +41,8 @@ private:
     FMOD_CHANNEL   *m_channel_1= nullptr, *m_channel_2= nullptr, *m_channel_3= nullptr;
 
     Transform* m_transform_player = nullptr;
+
+    AudioStudioEvent* m_audio_studio_event;
 
 };
 

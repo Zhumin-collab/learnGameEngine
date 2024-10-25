@@ -13,6 +13,7 @@ RTTR_REGISTRATION{
         .constructor<>()(rttr::policy::ctor::as_raw_ptr);
 }
 
+
 UICamera::UICamera():Camera()
 {
     m_camera_use_for = CameraUseFor::UI;

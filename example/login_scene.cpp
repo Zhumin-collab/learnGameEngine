@@ -26,9 +26,9 @@
 #include "ui/ui_mask.h"
 #include "ui/ui_text.h"
 #include "ui/ui_button.h"
-#include "audio/audio_source.h"
-#include "audio/audio_listener.h"
 #include "utils/time.h"
+#include "audio/studio/audio_studio.h"
+
 
 RTTR_REGISTRATION
 {
@@ -47,7 +47,7 @@ void LoginScene::Awake()
     m_camera_1->set_depth(0);
     m_last_mouse_position = Input::mousePosition();
 
-    // CreateFishSoupPot();
+     //CreateFishSoupPot();
 
     // CreateQuad();
 
@@ -105,6 +105,7 @@ void LoginScene::CreateQuad()
 void LoginScene::CreateAudioSource()
 {
     GameObject* go = new GameObject("audio_source_bgm");
+
     auto transform = dynamic_cast<Transform*>(go->add_component("Transform"));
     auto mesh_filter = dynamic_cast<MeshFilter*>(go->add_component("MeshFilter"));
     mesh_filter->loadMesh("model/sphere.mesh");
@@ -114,11 +115,10 @@ void LoginScene::CreateAudioSource()
     material->Parse("material/sphere_audio_source_3d_music.mat");
     mesh_renderer->SetMaterial(material);
 
-    auto audio_source = dynamic_cast<AudioSource*>(go->add_component("AudioSource"));
-    audio_source->set_audio_clip(AudioClip::LoadFromFile("audio/war_bgm.wav"));
-    audio_source->Play();
-    audio_source->Set3DMode(true);
-    audio_source->SetLoop(true);
+    AudioStudio::loadBankFile("audio/test.bank");
+    AudioStudio::loadBankFile("audio/test.strings.bank");
+
+    m_audio_studio_event = AudioStudio::CreateEventInstance("event:/footstep");
 }
 
 void LoginScene::CreateAudioListener()
@@ -135,7 +135,7 @@ void LoginScene::CreateAudioListener()
     material->Parse("material/sphere_audio_source_3d_listener.mat");
     mesh_render->SetMaterial(material);
 
-    go->add_component("AudioListener");
+    AudioStudio::setListenerAttributes(0.f, 0.f, 0.f);
 }
 
 
@@ -158,11 +158,25 @@ void LoginScene::Update()
 
     }
 
+    if(Input::GetKeyUp(KEY_CODE_S)){
+        m_audio_studio_event->Start();
+    }
+
+    if(Input::GetKeyUp(KEY_CODE_1)){
+        m_audio_studio_event->SetParameterByName("groundtype",0.0f);
+    }else if(Input::GetKeyUp(KEY_CODE_2)){
+        m_audio_studio_event->SetParameterByName("groundtype",1.0f);
+    }else if(Input::GetKeyUp(KEY_CODE_3)){
+        m_audio_studio_event->SetParameterByName("groundtype",2.0f);
+    }
+
+
+
     m_last_mouse_position = Input::mousePosition();
 
     m_transform_camera1->set_position(m_transform_camera1->position() * ((10 - Input::mouse_scroll()) / 10.f));
 
-    std::cout << Time::deltaTime() << std::endl;
+
     glm::mat4 rotate_mat4 = glm::rotate(glm::mat4(1.f), glm::radians(Time::deltaTime()*60), glm::vec3(0.f, 0.f, 1.f));
     glm::vec4 old_pos = glm::vec4(m_transform_player->position(), 1.f);
     glm::vec4 new_pos = rotate_mat4 * old_pos;

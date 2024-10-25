@@ -2,13 +2,15 @@
 #define APPLICATION_H
 
 #include <string>
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
 
+class GLFWwindow;
 class Application
 {
 public:
-    static const std::string& data_path() {return m_data_path;};
+
+    static void set_title(std::string title) {m_title = title;}
+    static const std::string& data_path() {return m_data_path;}
+
     static void set_data_path(const std::string& data_path) {m_data_path = data_path;};
 
     static void Init();
@@ -23,6 +25,8 @@ public:
 
 private:
     static std::string m_data_path;
+
+    static std::string m_title;
 
     static GLFWwindow* m_window;
 };

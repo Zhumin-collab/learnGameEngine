@@ -14,6 +14,8 @@
 #include "render_device/render_device_opengl.h"
 #include "audio/audio.h"
 #include "utils/time.h"
+
+std::string Application::m_title;
 std::string Application::m_data_path;
 GLFWwindow* Application::m_window;
 

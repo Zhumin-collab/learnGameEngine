@@ -7,7 +7,7 @@
 #include "utils/application.h"
 #include "utils/debug.h"
 
-FMOD_STUDIO_SYSTEM* AudioStudio::m_system = nullptr;
+FMOD_STUDIO_SYSTEM* AudioStudio::m_system;
 
 FMOD_RESULT AudioStudio::Init()
 {
@@ -40,7 +40,6 @@ FMOD_RESULT AudioStudio::loadBankFile(std::string file_name)
 {
     std::string bank_path = Application::data_path() + file_name;
     FMOD_STUDIO_BANK* bank = nullptr;
-
     return FMOD_Studio_System_LoadBankFile(m_system, bank_path.c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &bank);
 }
 

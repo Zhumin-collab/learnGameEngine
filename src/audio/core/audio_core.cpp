@@ -5,16 +5,16 @@
 #include "audio_core.h"
 #include "utils/debug.h"
 
-FMOD_SYSTEM* AudioCore::m_fmod_system = nullptr;
+FMOD_SYSTEM* AudioCore::m_fmod_system;
 
 void AudioCore::Init()
 {
     FMOD_RESULT result;
     
-    result = FMOD_System_Create(&m_fmod_system,FMOD_VERSION);
+    result = FMOD_System_Create(&m_fmod_system);
 
-    DEBUG_LOG_INFO("FMOD System Create result:{}", result);
-    spdlog::info("FMOD System Create result:{}", result);
+    DEBUG_LOG_INFO("FMOD System Create result:{}", int(result));
+    spdlog::info("FMOD System Create result:{}", int(result));
 
     unsigned int version;
     result = FMOD_System_GetVersion(m_fmod_system, &version);
@@ -27,7 +27,7 @@ void AudioCore::Init()
     }
 
     result = FMOD_System_Init(m_fmod_system, 32, FMOD_INIT_NORMAL, nullptr);
-    DEBUG_LOG_ERROR("FMOD System Init result:{}", result);
+    DEBUG_LOG_ERROR("FMOD System Init result:{}", int(result));
 }
 
 FMOD_RESULT AudioCore::Update()

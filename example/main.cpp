@@ -7,7 +7,8 @@
 
 int main(void)
 {
-    Application::set_data_path("D:/learnGameEngine/learnGameEngine/data/");
+    Application::set_title("[loadbank] press s play event, press 1 2 3 set param");
+    Application::set_data_path("E:/learnGameEngine/data/");
     Application::Init();
 
     GameObject* go = new GameObject("LoginScene");
